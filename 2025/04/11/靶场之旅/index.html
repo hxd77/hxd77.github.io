@@ -1,15 +1,16 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DVWA | Hxd的博客</title><meta name="author" content="Hxd"><meta name="copyright" content="Hxd"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="东隅已逝,桑榆非晚">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DVWA | Hxd的博客</title><meta name="author" content="Hxd"><meta name="copyright" content="Hxd"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="DVWA学习之旅之Burp Force     Author: hxd     Date: 2025年4月11日    DVWA的简介DVWA(Damn Vulnerable Web Application)一个用来进行安全脆弱性鉴定的PHP&#x2F;MySQL Web 应用，旨在为安全专业人员测试自己的专业技能和工具提供合法的环境，帮助web开发者更好的理解web应用安全防范的过程。 DVWA 一共包含">
 <meta property="og:type" content="website">
 <meta property="og:title" content="DVWA">
 <meta property="og:url" content="http://example.com/2025/04/11/%E9%9D%B6%E5%9C%BA%E4%B9%8B%E6%97%85/index.html">
 <meta property="og:site_name" content="Hxd的博客">
-<meta property="og:description" content="东隅已逝,桑榆非晚">
+<meta property="og:description" content="DVWA学习之旅之Burp Force     Author: hxd     Date: 2025年4月11日    DVWA的简介DVWA(Damn Vulnerable Web Application)一个用来进行安全脆弱性鉴定的PHP&#x2F;MySQL Web 应用，旨在为安全专业人员测试自己的专业技能和工具提供合法的环境，帮助web开发者更好的理解web应用安全防范的过程。 DVWA 一共包含">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true">
 <meta property="article:published_time" content="2025-04-11T07:48:36.000Z">
-<meta property="article:modified_time" content="2025-04-11T07:50:12.691Z">
+<meta property="article:modified_time" content="2025-04-12T08:07:16.983Z">
 <meta property="article:author" content="Hxd">
 <meta property="article:tag" content="学习">
+<meta property="article:tag" content="靶场">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true"><link rel="shortcut icon" href="https://github.com/hxd77/BlogImage/blob/master/Blog/d.jpg?raw=true"><link rel="canonical" href="http://example.com/2025/04/11/%E9%9D%B6%E5%9C%BA%E4%B9%8B%E6%97%85/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
     (() => {
@@ -144,14 +145,379 @@
   isHighlightShrink: false,
   isToc: false,
   pageType: 'blog'
-}</script><link rel="stylesheet" href="/background.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-color: #efefef;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-home-page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Hxd的博客</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="page-site-info"><h1 id="site-title">DVWA</h1></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Hxd</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/04/11/%E9%9D%B6%E5%9C%BA%E4%B9%8B%E6%97%85/">http://example.com/2025/04/11/靶场之旅/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">Hxd的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0/">学习</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav id="pagination"><div class="pagination"></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Hxd</div><div class="author-info-description">东隅已逝,桑榆非晚</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/hxd77"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/hxd77" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_74005941?spm=1018.2226.3001.5343" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:hxddong77@163.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">独行侠总冠军！</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/11/%E9%9D%B6%E5%9C%BA%E4%B9%8B%E6%97%85/" title="DVWA">DVWA</a><time datetime="2025-04-11T07:48:36.000Z" title="发表于 2025-04-11 15:48:36">2025-04-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/05/Diffie-Hellman%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E5%8D%8F%E8%AE%AE/" title="Diffie-Hellman密钥交换协议">Diffie-Hellman密钥交换协议</a><time datetime="2025-04-05T12:05:48.000Z" title="发表于 2025-04-05 20:05:48">2025-04-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/05/Shamir%E7%A7%98%E5%AF%86%E5%85%B1%E4%BA%AB/" title="Shamir秘密共享">Shamir秘密共享</a><time datetime="2025-04-05T12:03:42.000Z" title="发表于 2025-04-05 20:03:42">2025-04-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/05/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/" title="公钥密码学的数学基础1">公钥密码学的数学基础1</a><time datetime="2025-04-05T12:00:13.000Z" title="发表于 2025-04-05 20:00:13">2025-04-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/04/%E5%85%B3%E4%BA%8E%E8%80%83%E5%AE%8C%E7%A0%94%E7%9A%84%E6%84%9F%E6%82%9F/" title="关于考完研的感悟">关于考完研的感悟</a><time datetime="2025-04-04T13:22:04.000Z" title="发表于 2025-04-04 21:22:04">2025-04-04</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+}</script><link rel="stylesheet" href="/background.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-color: #efefef;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="not-home-page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Hxd的博客</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="page-site-info"><h1 id="site-title">DVWA</h1></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="DVWA学习之旅之Burp-Force"><a href="#DVWA学习之旅之Burp-Force" class="headerlink" title="DVWA学习之旅之Burp Force"></a>DVWA学习之旅之Burp Force</h1><p>
+    Author: hxd
+    <br>Date: 2025年4月11日
+</p>
+
+
+<h2 id="DVWA的简介"><a href="#DVWA的简介" class="headerlink" title="DVWA的简介"></a>DVWA的简介</h2><p>DVWA(Damn Vulnerable Web Application)一个用来进行安全脆弱性鉴定的PHP/MySQL Web 应用，旨在为安全专业人员测试自己的专业技能和工具提供合法的环境，帮助web开发者更好的理解web应用安全防范的过程。</p>
+<p>DVWA 一共包含了十个攻击模块，分别是：<strong>Brute Force（暴力（破解））、Command Injection（命令行注入）、CSRF（跨站请求伪造）、- File Inclusion（文件包含）、File Upload（文件上传）、Insecure CAPTCHA （不安全的验证码）、SQL Injection（SQL注入）、SQL Injection（Blind）（SQL盲注）、XSS（Reflected）（反射型跨站脚本）、XSS（Stored）（存储型跨站脚本）</strong>。包含了 OWASP TOP10 的所有攻击漏洞的练习环境，一站式解决所有 Web 渗透的学习环境。</p>
+<p>另外，DVWA 还可以手动调整靶机源码的安全级别，分别为 Low，Medium，High，Impossible，级别越高，安全防护越严格，渗透难度越大。</p>
+<p>一般 Low 级别基本没有做防护或者只是最简单的防护，很容易就能够渗透成功；而 Medium 会使用到一些非常粗糙的防护，需要使用者懂得如何去绕过防护措施；High 级别的防护则会大大提高防护级别，一般 High 级别的防护需要经验非常丰富才能成功渗透；</p>
+<p>最后 Impossible 基本是不可能渗透成功的，所以 Impossible 的源码一般可以被参考作为生产环境 Web 防护的最佳手段。</p>
+<p>下载和搭建过程我就省略了，网上都有，下面让我们直接开始：</p>
+<h2 id="Burp-Force-（暴力破解）"><a href="#Burp-Force-（暴力破解）" class="headerlink" title="Burp Force （暴力破解）"></a>Burp Force （暴力破解）</h2><h3 id="Low-Level（开发人员完全忽视了任何保护方法，允许任何人多次任意访问，可以在没有任何影响的情况下对任意用户进行登录）"><a href="#Low-Level（开发人员完全忽视了任何保护方法，允许任何人多次任意访问，可以在没有任何影响的情况下对任意用户进行登录）" class="headerlink" title="Low Level（开发人员完全忽视了任何保护方法，允许任何人多次任意访问，可以在没有任何影响的情况下对任意用户进行登录）"></a>Low Level（开发人员完全忽视了任何保护方法，允许任何人多次任意访问，可以在没有任何影响的情况下对任意用户进行登录）</h3><h4 id="源码审计"><a href="#源码审计" class="headerlink" title="源码审计"></a>源码审计</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>( <span class="keyword">isset</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;Login&#x27;</span> ] ) ) &#123;</span><br><span class="line">    <span class="comment">// Get username</span></span><br><span class="line">    <span class="variable">$user</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;username&#x27;</span> ];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get password</span></span><br><span class="line">    <span class="variable">$pass</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;password&#x27;</span> ];</span><br><span class="line">    <span class="variable">$pass</span> = <span class="title function_ invoke__">md5</span>( <span class="variable">$pass</span> );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check the database</span></span><br><span class="line">    <span class="variable">$query</span>  = <span class="string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="subst">$user</span>&#x27; AND password = &#x27;<span class="subst">$pass</span>&#x27;;&quot;</span>;</span><br><span class="line">    <span class="variable">$result</span> = <span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$query</span> ) <span class="keyword">or</span> <span class="keyword">die</span>( <span class="string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_error</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_connect_error</span>()) ? <span class="variable">$___mysqli_res</span> : <span class="literal">false</span>)) . <span class="string">&#x27;&lt;/pre&gt;&#x27;</span> );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>( <span class="variable">$result</span> &amp;&amp; <span class="title function_ invoke__">mysqli_num_rows</span>( <span class="variable">$result</span> ) == <span class="number">1</span> ) &#123;</span><br><span class="line">        <span class="comment">// Get users details</span></span><br><span class="line">        <span class="variable">$row</span>    = <span class="title function_ invoke__">mysqli_fetch_assoc</span>( <span class="variable">$result</span> );</span><br><span class="line">        <span class="variable">$avatar</span> = <span class="variable">$row</span>[<span class="string">&quot;avatar&quot;</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Login successful</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area <span class="subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;img src=\&quot;<span class="subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Login failed</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;&lt;br /&gt;Username and/or password incorrect.&lt;/pre&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ((<span class="title function_ invoke__">is_null</span>(<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_close</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="literal">false</span> : <span class="variable">$___mysqli_res</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>源码如下，代码将获取用户输入的用户名和密码并将其进行 md5 加密，然后使用 SQL SELECT 语句进行查询。由于进行了 md5 加密，因此直接阻止了 SQL 注入，因为经过 md5 这种摘要算法之后 SQL 语句就会被破坏(不过这里用 SQL 注入可以登陆成功)。注意到此时服务器只是使用了 isset() 函数验证了参数 Login 是否被设置，参数 username、password 没有做任何过滤，更重要的是没有任何的防爆破机制。</p>
+<h4 id="Gesture"><a href="#Gesture" class="headerlink" title="Gesture"></a>Gesture</h4><p>首先打开BP抓包，使用Sniper狙击手模式，只更改password，同时加载Payload，如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411171446127.png" alt="image-20250411171446127" style="zoom:50%;"></p>
+<p>爆破如下，发现password长度不一样：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411171528862.png" alt="image-20250411171528862"></p>
+<p>说明Low Level的用户名是admin，密码是password，登陆如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411171659702.png" alt="image-20250411171659702"></p>
+<h3 id="Medium-Level（此阶段在验证失败的登陆屏幕上添加睡眠，这意味着当你登录不正确时，在页面可见之前将有两秒钟的等待。这只会减慢一分钟内可处理的请求量，使暴力攻击的时间更长）"><a href="#Medium-Level（此阶段在验证失败的登陆屏幕上添加睡眠，这意味着当你登录不正确时，在页面可见之前将有两秒钟的等待。这只会减慢一分钟内可处理的请求量，使暴力攻击的时间更长）" class="headerlink" title="Medium Level（此阶段在验证失败的登陆屏幕上添加睡眠，这意味着当你登录不正确时，在页面可见之前将有两秒钟的等待。这只会减慢一分钟内可处理的请求量，使暴力攻击的时间更长）"></a>Medium Level（此阶段在验证失败的登陆屏幕上添加睡眠，这意味着当你登录不正确时，在页面可见之前将有两秒钟的等待。这只会减慢一分钟内可处理的请求量，使暴力攻击的时间更长）</h3><h4 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>( <span class="keyword">isset</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;Login&#x27;</span> ] ) ) &#123;</span><br><span class="line">    <span class="comment">// Sanitise username input</span></span><br><span class="line">    <span class="variable">$user</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;username&#x27;</span> ];</span><br><span class="line">    <span class="variable">$user</span> = ((<span class="keyword">isset</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_real_escape_string</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$user</span> ) : ((<span class="title function_ invoke__">trigger_error</span>(<span class="string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="string">&quot;&quot;</span> : <span class="string">&quot;&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Sanitise password input</span></span><br><span class="line">    <span class="variable">$pass</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;password&#x27;</span> ];</span><br><span class="line">    <span class="variable">$pass</span> = ((<span class="keyword">isset</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_real_escape_string</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$pass</span> ) : ((<span class="title function_ invoke__">trigger_error</span>(<span class="string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="string">&quot;&quot;</span> : <span class="string">&quot;&quot;</span>));</span><br><span class="line">    <span class="variable">$pass</span> = <span class="title function_ invoke__">md5</span>( <span class="variable">$pass</span> );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check the database</span></span><br><span class="line">    <span class="variable">$query</span>  = <span class="string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="subst">$user</span>&#x27; AND password = &#x27;<span class="subst">$pass</span>&#x27;;&quot;</span>;</span><br><span class="line">    <span class="variable">$result</span> = <span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$query</span> ) <span class="keyword">or</span> <span class="keyword">die</span>( <span class="string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_error</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_connect_error</span>()) ? <span class="variable">$___mysqli_res</span> : <span class="literal">false</span>)) . <span class="string">&#x27;&lt;/pre&gt;&#x27;</span> );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>( <span class="variable">$result</span> &amp;&amp; <span class="title function_ invoke__">mysqli_num_rows</span>( <span class="variable">$result</span> ) == <span class="number">1</span> ) &#123;</span><br><span class="line">        <span class="comment">// Get users details</span></span><br><span class="line">        <span class="variable">$row</span>    = <span class="title function_ invoke__">mysqli_fetch_assoc</span>( <span class="variable">$result</span> );</span><br><span class="line">        <span class="variable">$avatar</span> = <span class="variable">$row</span>[<span class="string">&quot;avatar&quot;</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Login successful</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area <span class="subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;img src=\&quot;<span class="subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Login failed</span></span><br><span class="line">        <span class="title function_ invoke__">sleep</span>( <span class="number">2</span> );</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;&lt;br /&gt;Username and/or password incorrect.&lt;/pre&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ((<span class="title function_ invoke__">is_null</span>(<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_close</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="literal">false</span> : <span class="variable">$___mysqli_res</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>源码如下，Medium 级别的代码主要增加了 <strong>mysql_real_escape_string 函数，该函数会对字符串中的特殊符号进行转义，从而对用户输入的参数进行了简单的过滤</strong>。相比 low 级别的代码，当登录验证失败时界面将冻结 2 秒，从而影响了爆破操作的效率，不过如果是一个闲来无事并且很有耐心的白帽黑客，爆破出密码仍然是时间问题。</p>
+<h4 id="Gesture-1"><a href="#Gesture-1" class="headerlink" title="Gesture"></a>Gesture</h4><p>继续使用BP抓包，跟Low Level一样的操作，只是由于登录验证失败时界面会冻结2秒，所以会慢一点：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411173801600.png" alt="image-20250411173801600"></p>
+<p>发现密码还是password:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411173926027.png" alt="image-20250411173926027"></p>
+<p>成功登录：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411174001014.png" alt="image-20250411174001014"></p>
+<hr>
+<h3 id="High-Level（开发者使用了”CSRF”的反伪造请求，有一个旧的说法表示这种保护可以阻止暴力攻击，但事实并非如此。这个级别扩展了中等级别，在登录失败时等待，但这次是-2-到-4-秒之间的随机时间，这样做的目的是试图混淆任何时间预测。使用验证码表单可能会产生与-CSRF-令牌类似的效果。）"><a href="#High-Level（开发者使用了”CSRF”的反伪造请求，有一个旧的说法表示这种保护可以阻止暴力攻击，但事实并非如此。这个级别扩展了中等级别，在登录失败时等待，但这次是-2-到-4-秒之间的随机时间，这样做的目的是试图混淆任何时间预测。使用验证码表单可能会产生与-CSRF-令牌类似的效果。）" class="headerlink" title="High Level（开发者使用了”CSRF”的反伪造请求，有一个旧的说法表示这种保护可以阻止暴力攻击，但事实并非如此。这个级别扩展了中等级别，在登录失败时等待，但这次是 2 到 4 秒之间的随机时间，这样做的目的是试图混淆任何时间预测。使用验证码表单可能会产生与 CSRF 令牌类似的效果。）"></a>High Level（开发者使用了”CSRF”的反伪造请求，有一个旧的说法表示这种保护可以阻止暴力攻击，但事实并非如此。这个级别扩展了中等级别，在登录失败时等待，但这次是 2 到 4 秒之间的随机时间，这样做的目的是试图混淆任何时间预测。使用验证码表单可能会产生与 CSRF 令牌类似的效果。）</h3><h4 id="代码审计-1"><a href="#代码审计-1" class="headerlink" title="代码审计"></a>代码审计</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>( <span class="keyword">isset</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;Login&#x27;</span> ] ) ) &#123;</span><br><span class="line">    <span class="comment">// Check Anti-CSRF token</span></span><br><span class="line">    <span class="title function_ invoke__">checkToken</span>( <span class="variable">$_REQUEST</span>[ <span class="string">&#x27;user_token&#x27;</span> ], <span class="variable">$_SESSION</span>[ <span class="string">&#x27;session_token&#x27;</span> ], <span class="string">&#x27;index.php&#x27;</span> );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Sanitise username input</span></span><br><span class="line">    <span class="variable">$user</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;username&#x27;</span> ];</span><br><span class="line">    <span class="variable">$user</span> = <span class="title function_ invoke__">stripslashes</span>( <span class="variable">$user</span> );</span><br><span class="line">    <span class="variable">$user</span> = ((<span class="keyword">isset</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_real_escape_string</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$user</span> ) : ((<span class="title function_ invoke__">trigger_error</span>(<span class="string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="string">&quot;&quot;</span> : <span class="string">&quot;&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Sanitise password input</span></span><br><span class="line">    <span class="variable">$pass</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;password&#x27;</span> ];</span><br><span class="line">    <span class="variable">$pass</span> = <span class="title function_ invoke__">stripslashes</span>( <span class="variable">$pass</span> );</span><br><span class="line">    <span class="variable">$pass</span> = ((<span class="keyword">isset</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_real_escape_string</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$pass</span> ) : ((<span class="title function_ invoke__">trigger_error</span>(<span class="string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="string">&quot;&quot;</span> : <span class="string">&quot;&quot;</span>));</span><br><span class="line">    <span class="variable">$pass</span> = <span class="title function_ invoke__">md5</span>( <span class="variable">$pass</span> );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check database</span></span><br><span class="line">    <span class="variable">$query</span>  = <span class="string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="subst">$user</span>&#x27; AND password = &#x27;<span class="subst">$pass</span>&#x27;;&quot;</span>;</span><br><span class="line">    <span class="variable">$result</span> = <span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$query</span> ) <span class="keyword">or</span> <span class="keyword">die</span>( <span class="string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="title function_ invoke__">is_object</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>])) ? <span class="title function_ invoke__">mysqli_error</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_connect_error</span>()) ? <span class="variable">$___mysqli_res</span> : <span class="literal">false</span>)) . <span class="string">&#x27;&lt;/pre&gt;&#x27;</span> );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>( <span class="variable">$result</span> &amp;&amp; <span class="title function_ invoke__">mysqli_num_rows</span>( <span class="variable">$result</span> ) == <span class="number">1</span> ) &#123;</span><br><span class="line">        <span class="comment">// Get users details</span></span><br><span class="line">        <span class="variable">$row</span>    = <span class="title function_ invoke__">mysqli_fetch_assoc</span>( <span class="variable">$result</span> );</span><br><span class="line">        <span class="variable">$avatar</span> = <span class="variable">$row</span>[<span class="string">&quot;avatar&quot;</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Login successful</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area <span class="subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;img src=\&quot;<span class="subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Login failed</span></span><br><span class="line">        <span class="title function_ invoke__">sleep</span>( <span class="title function_ invoke__">rand</span>( <span class="number">0</span>, <span class="number">3</span> ) );</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;pre&gt;&lt;br /&gt;Username and/or password incorrect.&lt;/pre&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ((<span class="title function_ invoke__">is_null</span>(<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_close</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="literal">false</span> : <span class="variable">$___mysqli_res</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Generate Anti-CSRF token</span></span><br><span class="line"><span class="title function_ invoke__">generateSessionToken</span>();</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>High 级别的代码使用了stripslashes 函数，进一步过滤输入的内容。同时使用了 Token 抵御 CSRF 攻击，在每次登录时网页会随机生成一个 user_token 参数，在用户提交用户名和密码时要对 token 进行检查再进行 sql 查询。</p>
+<p>Token是服务端生成的一串字符串，以作客户端进行请求的一个令牌，当第一次登录后，服务器生成一个Token便将此Token返回给客户端，以后客户端只需带上这个Token前来请求数据即可，无需再次带上用户名和密码</p>
+<p>写一段python脚本查询：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line">r=requests.get(<span class="string">&quot;http://192.168.239.1/DVWA/vulnerabilities/brute/?username=admin&amp;password=password&amp;Login=Login&amp;user_token=a9427c593c12feca4bf502f3106af547#&quot;</span>)</span><br><span class="line">demo=r.text</span><br><span class="line">soup=BeautifulSoup(demo,<span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(soup.prettify())</span><br></pre></td></tr></table></figure>
+<p>发现每次的user_token都是不一样的，如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411203400372.png" alt="image-20250411203400372"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411203412676.png" alt="image-20250411203412676"></p>
+<p>这里有两种思路:</p>
+<ul>
+<li><p>第一种方法：</p>
+<p>也是先使用BP抓包，然后我们使用Pitchfork模式，为password和token添加变量进行爆破，如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411210135432.png" alt="image-20250411210135432"></p>
+</li>
+</ul>
+<p>第一个username导入本地爆破字典，然后第二个token我们打开右边的setting找到Grep-Extract点击add添加</p>
+<blockquote>
+<h3 id="Grep-Extract的基本用法"><a href="#Grep-Extract的基本用法" class="headerlink" title="Grep-Extract的基本用法"></a>Grep-Extract的基本用法</h3><p>Grep-Extract功能允许用户通过正则表达式来匹配和提取HTTP请求或响应中的特定数据。用户可以在Burp Suite的Intruder模块中使用Grep-Extract，通过设置特定的正则表达式来过滤和提取需要的数据。例如，在SQL注入测试中，可以使用Grep-Extract来提取数据库中的表名或列名‌</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411211035463.png" alt="image-20250411211035463"></p>
+<p>上述的value值等会自动生成，然后点击OK。在Payloads加载界面为token变量设置Payload type为Recursive grep递归模式，同时设置initial payload for first request要为刚刚在Grep-Extract中的token值，如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411214032846.png" alt="image-20250411214032846"></p>
+<p>然后爆破找到密码为password:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411213953437.png" alt="image-20250411213953437"></p>
+<p>然后成功登录:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250411214109324.png" alt="image-20250411214109324"></p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="Low-Level"><a href="#Low-Level" class="headerlink" title="Low Level"></a>Low Level</h3><h3 id="✅-正常功能部分"><a href="#✅-正常功能部分" class="headerlink" title="✅ 正常功能部分"></a>✅ 正常功能部分</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>( <span class="keyword">isset</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;Login&#x27;</span> ] ) ) &#123;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果 URL 中设置了 <code>Login</code> 参数，就执行登录流程。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$user</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;username&#x27;</span> ];</span><br><span class="line"><span class="variable">$pass</span> = <span class="variable">$_GET</span>[ <span class="string">&#x27;password&#x27;</span> ];</span><br><span class="line"><span class="variable">$pass</span> = <span class="title function_ invoke__">md5</span>( <span class="variable">$pass</span> );</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从 GET 参数中获取用户名和密码，并用 <code>md5</code> 对密码进行哈希（这已经过时，后面详说）。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$query</span>  = <span class="string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="subst">$user</span>&#x27; AND password = &#x27;<span class="subst">$pass</span>&#x27;;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>构造 SQL 查询语句来验证用户身份。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$result</span> = <span class="title function_ invoke__">mysqli_query</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>],  <span class="variable">$query</span> ) <span class="keyword">or</span> <span class="keyword">die</span>( ... );</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 mysqli 查询数据库，如果失败就打印错误。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>( <span class="variable">$result</span> &amp;&amp; <span class="title function_ invoke__">mysqli_num_rows</span>( <span class="variable">$result</span> ) == <span class="number">1</span> ) &#123;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果查到一个匹配的用户，就说明登录成功。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$row</span>    = <span class="title function_ invoke__">mysqli_fetch_assoc</span>( <span class="variable">$result</span> );</span><br><span class="line"><span class="variable">$avatar</span> = <span class="variable">$row</span>[<span class="string">&quot;avatar&quot;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area <span class="subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;img src=\&quot;<span class="subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>显示欢迎信息和头像。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">((<span class="title function_ invoke__">is_null</span>(<span class="variable">$___mysqli_res</span> = <span class="title function_ invoke__">mysqli_close</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="literal">false</span> : <span class="variable">$___mysqli_res</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>关闭数据库连接。</li>
+</ul>
+<hr>
+<h3 id="⚠️-存在的安全问题分析"><a href="#⚠️-存在的安全问题分析" class="headerlink" title="⚠️ 存在的安全问题分析"></a>⚠️ 存在的安全问题分析</h3><h4 id="1-🚨-SQL-注入漏洞"><a href="#1-🚨-SQL-注入漏洞" class="headerlink" title="1. 🚨 SQL 注入漏洞"></a>1. 🚨 SQL 注入漏洞</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$query</span>  = <span class="string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="subst">$user</span>&#x27; AND password = &#x27;<span class="subst">$pass</span>&#x27;;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>直接把用户输入拼接进 SQL 语句，容易被 SQL 注入攻击。</p>
+</li>
+<li><p>示例攻击：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username=admin&#x27; --&amp;password=123</span><br></pre></td></tr></table></figure>
+<p>这会让原始 SQL 查询变成：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `users` <span class="keyword">WHERE</span> <span class="keyword">user</span> <span class="operator">=</span> <span class="string">&#x27;admin&#x27;</span> <span class="comment">--&#x27; AND password = &#x27;md5hash&#x27;;</span></span><br></pre></td></tr></table></figure>
+<p><code>--</code> 表示注释，后面被忽略，导致密码验证被绕过。</p>
+</li>
+</ul>
+<h4 id="✅-修复方法："><a href="#✅-修复方法：" class="headerlink" title="✅ 修复方法："></a>✅ 修复方法：</h4><p>使用 <strong>预处理语句（prepared statements）</strong>：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$stmt</span> = <span class="variable">$mysqli</span>-&gt;<span class="title function_ invoke__">prepare</span>(<span class="string">&quot;SELECT * FROM users WHERE user = ? AND password = ?&quot;</span>);</span><br><span class="line"><span class="variable">$stmt</span>-&gt;<span class="title function_ invoke__">bind_param</span>(<span class="string">&quot;ss&quot;</span>, <span class="variable">$user</span>, <span class="variable">$pass</span>);</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="2-🔒-弱密码哈希（使用了-md5）"><a href="#2-🔒-弱密码哈希（使用了-md5）" class="headerlink" title="2. 🔒 弱密码哈希（使用了 md5）"></a>2. 🔒 弱密码哈希（使用了 md5）</h4><ul>
+<li><p><code>md5</code> 已被认为<strong>不安全</strong>，容易被彩虹表或暴力破解。</p>
+</li>
+<li><p>应使用 <code>password_hash()</code> 和 <code>password_verify()</code> 进行密码加密与校验：</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 注册时保存：</span></span><br><span class="line"><span class="variable">$password_hash</span> = <span class="title function_ invoke__">password_hash</span>(<span class="variable">$password</span>, PASSWORD_DEFAULT);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 登录时验证：</span></span><br><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">password_verify</span>(<span class="variable">$input_password</span>, <span class="variable">$password_hash</span>)) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="3-📥-使用-GET-提交密码"><a href="#3-📥-使用-GET-提交密码" class="headerlink" title="3. 📥 使用 GET 提交密码"></a>3. 📥 使用 GET 提交密码</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$_GET</span>[<span class="string">&#x27;password&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>密码作为 URL 参数发送，<strong>很容易泄露</strong>，例如：</p>
+<ul>
+<li><p>浏览器历史记录</p>
+</li>
+<li><p>日志文件</p>
+</li>
+<li><p>网络嗅探</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>✅ 应使用 POST 提交表单数据，并通过 <code>$_POST</code> 获取。</p>
+<hr>
+<h4 id="4-📤-XSS（跨站脚本）风险"><a href="#4-📤-XSS（跨站脚本）风险" class="headerlink" title="4. 📤 XSS（跨站脚本）风险"></a>4. 📤 XSS（跨站脚本）风险</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area <span class="subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果用户名中有 HTML/JS 代码，会被直接输出，导致 XSS。</li>
+</ul>
+<p>✅ 使用 <code>htmlspecialchars()</code> 进行转义：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area &quot;</span> . <span class="title function_ invoke__">htmlspecialchars</span>(<span class="variable">$user</span>) . <span class="string">&quot;&lt;/p&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="🔚-总结：这段代码的问题汇总"><a href="#🔚-总结：这段代码的问题汇总" class="headerlink" title="🔚 总结：这段代码的问题汇总"></a>🔚 总结：这段代码的问题汇总</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>风险级别</th>
+<th>修复建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQL 注入</td>
+<td>高</td>
+<td>使用预处理语句</td>
+</tr>
+<tr>
+<td>使用 md5 加密密码</td>
+<td>高</td>
+<td>使用 password_hash</td>
+</tr>
+<tr>
+<td>GET 提交敏感信息</td>
+<td>中</td>
+<td>使用 POST 方法</td>
+</tr>
+<tr>
+<td>没有转义用户输出（XSS）</td>
+<td>中</td>
+<td>使用 htmlspecialchars</td>
+</tr>
+<tr>
+<td>弱错误处理方式</td>
+<td>低</td>
+<td>日志记录+用户友好提示</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="Medium-Level"><a href="#Medium-Level" class="headerlink" title="Medium Level"></a>Medium Level</h3><p>这段代码相比你上一次发的版本，做了一些<strong>改进</strong>，主要是增加了对用户输入的<strong>转义处理（<code>mysqli_real_escape_string</code>）</strong>，来<strong>减缓 SQL 注入的风险</strong>，并在登录失败时加入了一个 <code>sleep(2)</code> 延迟来<strong>防止暴力破解</strong>。但<strong>仍然存在很多安全问题和过时的做法</strong>。我们继续逐点分析：</p>
+<hr>
+<h2 id="✅-改进的地方"><a href="#✅-改进的地方" class="headerlink" title="✅ 改进的地方"></a>✅ 改进的地方</h2><h3 id="1-使用-mysqli-real-escape-string-对用户名和密码进行转义"><a href="#1-使用-mysqli-real-escape-string-对用户名和密码进行转义" class="headerlink" title="1. 使用 mysqli_real_escape_string 对用户名和密码进行转义"></a>1. 使用 <code>mysqli_real_escape_string</code> 对用户名和密码进行转义</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$user</span> = <span class="title function_ invoke__">mysqli_real_escape_string</span>(<span class="variable">$conn</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>]);</span><br><span class="line"><span class="variable">$pass</span> = <span class="title function_ invoke__">mysqli_real_escape_string</span>(<span class="variable">$conn</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+<p>✅ 这比直接拼接更安全，防止一些基本的 SQL 注入攻击。</p>
+<hr>
+<h3 id="2-登录失败加了-sleep-2"><a href="#2-登录失败加了-sleep-2" class="headerlink" title="2. 登录失败加了 sleep(2)"></a>2. 登录失败加了 <code>sleep(2)</code></h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">sleep</span>( <span class="number">2</span> );</span><br></pre></td></tr></table></figure>
+<p>✅ 这是一个很基础的<strong>反暴力破解保护</strong>，防止脚本快速尝试密码。但仅靠这个远远不够。</p>
+<hr>
+<h2 id="❌-仍然存在的问题和风险"><a href="#❌-仍然存在的问题和风险" class="headerlink" title="❌ 仍然存在的问题和风险"></a>❌ 仍然存在的问题和风险</h2><h3 id="1-❗-SQL-注入风险仍然存在"><a href="#1-❗-SQL-注入风险仍然存在" class="headerlink" title="1. ❗ SQL 注入风险仍然存在"></a>1. ❗ SQL 注入风险仍然存在</h3><p>虽然用了 <code>mysqli_real_escape_string</code>，但<strong>这不是完全防护</strong>，尤其是面对复杂或绕过型注入。<strong>正确的做法是使用预处理语句（prepared statements）</strong>。</p>
+<p>✅ 正确用法示例：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$stmt</span> = <span class="variable">$mysqli</span>-&gt;<span class="title function_ invoke__">prepare</span>(<span class="string">&quot;SELECT * FROM users WHERE user = ? AND password = ?&quot;</span>);</span><br><span class="line"><span class="variable">$stmt</span>-&gt;<span class="title function_ invoke__">bind_param</span>(<span class="string">&quot;ss&quot;</span>, <span class="variable">$user</span>, <span class="variable">$pass</span>);</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="2-❗-使用-md5-加密密码-——-非常不安全"><a href="#2-❗-使用-md5-加密密码-——-非常不安全" class="headerlink" title="2. ❗ 使用 md5 加密密码 —— 非常不安全"></a>2. ❗ 使用 <code>md5</code> 加密密码 —— 非常不安全</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$pass</span> = <span class="title function_ invoke__">md5</span>(<span class="variable">$pass</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>md5</code> 已被完全淘汰，能被秒破，甚至有公开反查库。</p>
+</li>
+<li><p>应使用 <code>password_hash()</code> + <code>password_verify()</code>。</p>
+</li>
+</ul>
+<p>✅ 替代方式：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 注册时存入：</span></span><br><span class="line"><span class="variable">$hashed_password</span> = <span class="title function_ invoke__">password_hash</span>(<span class="variable">$password</span>, PASSWORD_DEFAULT);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 登录时验证：</span></span><br><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">password_verify</span>(<span class="variable">$input_password</span>, <span class="variable">$hashed_password</span>)) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="3-❗-仍使用-GET-请求传递敏感信息"><a href="#3-❗-仍使用-GET-请求传递敏感信息" class="headerlink" title="3. ❗ 仍使用 GET 请求传递敏感信息"></a>3. ❗ 仍使用 GET 请求传递敏感信息</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>], <span class="variable">$_GET</span>[<span class="string">&#x27;password&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>使用 GET 会将用户名和密码暴露在 URL 中（浏览器历史、日志、代理服务器都会记录）。</p>
+</li>
+<li><p>应使用 POST 提交表单。</p>
+</li>
+</ul>
+<p>✅ 用法：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">action</span>=<span class="string">&quot;login.php&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="4-❗-输出未经过转义，存在-XSS-风险"><a href="#4-❗-输出未经过转义，存在-XSS-风险" class="headerlink" title="4. ❗ 输出未经过转义，存在 XSS 风险"></a>4. ❗ 输出未经过转义，存在 XSS 风险</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area <span class="subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果用户名是 <code>&lt;script&gt;alert(&#39;XSS&#39;)&lt;/script&gt;</code>，就会被浏览器执行。</li>
+</ul>
+<p>✅ 使用 <code>htmlspecialchars</code> 转义输出：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;Welcome to the password protected area &quot;</span> . <span class="title function_ invoke__">htmlspecialchars</span>(<span class="variable">$user</span>, ENT_QUOTES, <span class="string">&#x27;UTF-8&#x27;</span>) . <span class="string">&quot;&lt;/p&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="5-❗-不安全的数据库错误信息暴露"><a href="#5-❗-不安全的数据库错误信息暴露" class="headerlink" title="5. ❗ 不安全的数据库错误信息暴露"></a>5. ❗ 不安全的数据库错误信息暴露</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">die</span>( <span class="string">&#x27;&lt;pre&gt;&#x27;</span> . <span class="title function_ invoke__">mysqli_error</span>(...) . <span class="string">&#x27;&lt;/pre&gt;&#x27;</span> );</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>把数据库错误暴露给用户是一个安全隐患。攻击者可以据此构造攻击。</p>
+</li>
+<li><p>正确做法是：记录日志，展示通用错误信息。</p>
+</li>
+</ul>
+<hr>
+<h2 id="✅-总结与建议"><a href="#✅-总结与建议" class="headerlink" title="✅ 总结与建议"></a>✅ 总结与建议</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>问题/改进</th>
+<th>现状</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQL 注入防护</td>
+<td>使用了 <code>mysqli_real_escape_string</code>，但还不够</td>
+<td>✅ 使用 prepared statements</td>
+</tr>
+<tr>
+<td>密码哈希</td>
+<td>使用 <code>md5</code>（不安全）</td>
+<td>✅ 改用 <code>password_hash</code> / <code>password_verify</code></td>
+</tr>
+<tr>
+<td>请求方式</td>
+<td>使用 GET（不安全）</td>
+<td>✅ 改用 POST</td>
+</tr>
+<tr>
+<td>XSS 防护</td>
+<td>用户输出未转义</td>
+<td>✅ 使用 <code>htmlspecialchars()</code></td>
+</tr>
+<tr>
+<td>错误信息</td>
+<td>暴露数据库错误</td>
+<td>✅ 隐藏详细错误，只写日志</td>
+</tr>
+<tr>
+<td>暴力破解防护</td>
+<td>使用 <code>sleep(2)</code></td>
+<td>✅ 可以进一步引入登录失败计数机制</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="High-Level"><a href="#High-Level" class="headerlink" title="High Level"></a>High Level</h3><p>这段 PHP 代码是一个带有 <strong>CSRF 防护、基本 SQL 查询和登录逻辑</strong> 的登录处理脚本。它在你前面发的版本基础上，又增加了一些<strong>安全性</strong>，比如：</p>
+<ul>
+<li><p>✅ 增加了 <strong>CSRF Token 检查</strong></p>
+</li>
+<li><p>✅ 添加了 <code>stripslashes()</code> 去除魔术引号（在老版本 PHP 中可能有用）</p>
+</li>
+<li><p>✅ 登录失败时加入了 <strong>随机 sleep 时间</strong> 来抵抗爆破</p>
+</li>
+<li><p>❌ 但仍然存在几个关键的安全问题</p>
+</li>
+</ul>
+<hr>
+<h2 id="🧩-一步步分析"><a href="#🧩-一步步分析" class="headerlink" title="🧩 一步步分析"></a>🧩 一步步分析</h2><h3 id="✅-1-检查是否提交了登录请求"><a href="#✅-1-检查是否提交了登录请求" class="headerlink" title="✅ 1. 检查是否提交了登录请求"></a>✅ 1. 检查是否提交了登录请求</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>( <span class="keyword">isset</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;Login&#x27;</span> ] ) ) &#123;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>表示是一个通过 GET 请求提交的登录表单（<strong>不推荐</strong>，敏感信息暴露在 URL 中）</li>
+</ul>
+<hr>
+<h3 id="✅-2-CSRF-Token-检查"><a href="#✅-2-CSRF-Token-检查" class="headerlink" title="✅ 2. CSRF Token 检查"></a>✅ 2. CSRF Token 检查</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">checkToken</span>( <span class="variable">$_REQUEST</span>[ <span class="string">&#x27;user_token&#x27;</span> ], <span class="variable">$_SESSION</span>[ <span class="string">&#x27;session_token&#x27;</span> ], <span class="string">&#x27;index.php&#x27;</span> );</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>这是对<strong>跨站请求伪造（CSRF）</strong>的防护。</p>
+</li>
+<li><p><code>user_token</code> 是表单提交的，<code>session_token</code> 是服务端生成的。</p>
+</li>
+<li><p>如果验证失败，通常会重定向或退出（<code>checkToken()</code> 函数你没贴出来，但应该做了这些）。</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-3-输入处理：去除转义-SQL-转义"><a href="#✅-3-输入处理：去除转义-SQL-转义" class="headerlink" title="✅ 3. 输入处理：去除转义 + SQL 转义"></a>✅ 3. 输入处理：去除转义 + SQL 转义</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$user</span> = <span class="title function_ invoke__">stripslashes</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;username&#x27;</span> ] );</span><br><span class="line"><span class="variable">$user</span> = <span class="title function_ invoke__">mysqli_real_escape_string</span>( ..., <span class="variable">$user</span> );</span><br><span class="line"></span><br><span class="line"><span class="variable">$pass</span> = <span class="title function_ invoke__">stripslashes</span>( <span class="variable">$_GET</span>[ <span class="string">&#x27;password&#x27;</span> ] );</span><br><span class="line"><span class="variable">$pass</span> = <span class="title function_ invoke__">mysqli_real_escape_string</span>( ..., <span class="variable">$pass</span> );</span><br><span class="line"><span class="variable">$pass</span> = <span class="title function_ invoke__">md5</span>( <span class="variable">$pass</span> );</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>✅ <code>stripslashes()</code>：去掉魔术引号（PHP 5.x 遗留问题）</p>
+</li>
+<li><p>✅ <code>mysqli_real_escape_string()</code>：防止基本 SQL 注入</p>
+</li>
+<li><p>❌ <code>md5($pass)</code>：<strong>非常不安全</strong>，见下文</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-4-构造并执行-SQL-查询"><a href="#✅-4-构造并执行-SQL-查询" class="headerlink" title="✅ 4. 构造并执行 SQL 查询"></a>✅ 4. 构造并执行 SQL 查询</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$query</span> = <span class="string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="subst">$user</span>&#x27; AND password = &#x27;<span class="subst">$pass</span>&#x27;;&quot;</span>;</span><br><span class="line"><span class="variable">$result</span> = <span class="title function_ invoke__">mysqli_query</span>(...);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>这是典型的用户名 + 密码校验语句</p>
+</li>
+<li><p>❌ 使用了<strong>拼接 SQL 语句</strong>而不是参数化查询（<strong>仍有注入风险</strong>）</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-5-判断登录是否成功"><a href="#✅-5-判断登录是否成功" class="headerlink" title="✅ 5. 判断登录是否成功"></a>✅ 5. 判断登录是否成功</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>( <span class="variable">$result</span> &amp;&amp; <span class="title function_ invoke__">mysqli_num_rows</span>( <span class="variable">$result</span> ) == <span class="number">1</span> ) &#123;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>如果只有一条记录，表示用户名和密码匹配</p>
+</li>
+<li><p>成功时显示头像并欢迎用户</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;img src=\&quot;<span class="subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>❗ <strong>未经过 <code>htmlspecialchars()</code> 转义</strong>，仍有 <strong>XSS 风险</strong></p>
+<hr>
+<h3 id="✅-6-登录失败处理"><a href="#✅-6-登录失败处理" class="headerlink" title="✅ 6. 登录失败处理"></a>✅ 6. 登录失败处理</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">sleep</span>( <span class="title function_ invoke__">rand</span>( <span class="number">0</span>, <span class="number">3</span> ) );</span><br></pre></td></tr></table></figure>
+<ul>
+<li>✅ 添加了<strong>随机延迟</strong>，降低爆破攻击效率</li>
+</ul>
+<hr>
+<h3 id="✅-7-生成-CSRF-Token"><a href="#✅-7-生成-CSRF-Token" class="headerlink" title="✅ 7. 生成 CSRF Token"></a>✅ 7. 生成 CSRF Token</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">generateSessionToken</span>();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>表示页面加载时会为用户创建一个随机的 session token</p>
+</li>
+<li><p>页面上应该会包含 <code>&lt;input type=&quot;hidden&quot; name=&quot;user_token&quot; value=&quot;...&quot;&gt;</code></p>
+</li>
+</ul>
+<hr>
+<h2 id="❗-安全问题总结与建议"><a href="#❗-安全问题总结与建议" class="headerlink" title="❗ 安全问题总结与建议"></a>❗ 安全问题总结与建议</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解释</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>❌ 使用 GET 提交表单</td>
+<td>用户名、密码会暴露在 URL</td>
+<td>✅ 改用 POST</td>
+</tr>
+<tr>
+<td>❌ 使用 md5 存储密码</td>
+<td>不安全，易被破解</td>
+<td>✅ 使用 <code>password_hash</code> 和 <code>password_verify</code></td>
+</tr>
+<tr>
+<td>❌ SQL 拼接</td>
+<td>即使转义了，仍可能有注入风险</td>
+<td>✅ 使用 prepared statements</td>
+</tr>
+<tr>
+<td>❌ 输出未转义</td>
+<td>用户名或头像路径可被注入 JS 脚本</td>
+<td>✅ 使用 <code>htmlspecialchars()</code></td>
+</tr>
+<tr>
+<td>⚠ 依赖老函数（如 stripslashes）</td>
+<td>可能说明 PHP 配置问题</td>
+<td>✅ 建议检查 <code>magic_quotes_gpc</code> 是否关闭</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Hxd</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/04/11/%E9%9D%B6%E5%9C%BA%E4%B9%8B%E6%97%85/">http://example.com/2025/04/11/靶场之旅/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">Hxd的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0/">学习</a><a class="post-meta__tags" href="/tags/%E9%9D%B6%E5%9C%BA/">靶场</a></div><div class="post-share"><div class="social-share" data-image="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav id="pagination"><div class="pagination"></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Hxd</div><div class="author-info-description">东隅已逝,桑榆非晚</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/hxd77"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/hxd77" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_74005941?spm=1018.2226.3001.5343" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:hxddong77@163.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">独行侠总冠军！</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/11/%E9%9D%B6%E5%9C%BA%E4%B9%8B%E6%97%85/" title="DVWA">DVWA</a><time datetime="2025-04-11T07:48:36.000Z" title="发表于 2025-04-11 15:48:36">2025-04-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/05/Diffie-Hellman%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E5%8D%8F%E8%AE%AE/" title="Diffie-Hellman密钥交换协议">Diffie-Hellman密钥交换协议</a><time datetime="2025-04-05T12:05:48.000Z" title="发表于 2025-04-05 20:05:48">2025-04-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/05/Shamir%E7%A7%98%E5%AF%86%E5%85%B1%E4%BA%AB/" title="Shamir秘密共享">Shamir秘密共享</a><time datetime="2025-04-05T12:03:42.000Z" title="发表于 2025-04-05 20:03:42">2025-04-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/05/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/" title="公钥密码学的数学基础1">公钥密码学的数学基础1</a><time datetime="2025-04-05T12:00:13.000Z" title="发表于 2025-04-05 20:00:13">2025-04-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/04/%E5%85%B3%E4%BA%8E%E8%80%83%E5%AE%8C%E7%A0%94%E7%9A%84%E6%84%9F%E6%82%9F/" title="关于考完研的感悟">关于考完研的感悟</a><time datetime="2025-04-04T13:22:04.000Z" title="发表于 2025-04-04 21:22:04">2025-04-04</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>分类</span>
             
           </div>
           <ul class="card-category-list" id="aside-cat-list">
             <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/"><span class="card-category-list-name">公钥密码学的数学基础</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/"><span class="card-category-list-name">密码学</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%94%9F%E6%B4%BB%E9%9A%8F%E6%89%8B%E6%97%A5%E5%B8%B8/"><span class="card-category-list-name">生活随手日常</span><span class="card-category-list-count">1</span></a></li>
-          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 1.5em; color: #99a9bf">学习笔记</a> <a href="/tags/%E9%9A%8F%E6%89%8B%E4%B8%80%E5%86%99/" style="font-size: 1.3em; color: #99a1ac">随手一写</a> <a href="/tags/%E5%AD%A6%E4%B9%A0/" style="font-size: 1.1em; color: #999">学习</a></div></div><div class="card-widget card-archives">
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E9%9D%B6%E5%9C%BA/" style="font-size: 1.1em; color: #999">靶场</a> <a href="/tags/%E5%AD%A6%E4%B9%A0/" style="font-size: 1.1em; color: #999">学习</a> <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="font-size: 1.5em; color: #99a9bf">学习笔记</a> <a href="/tags/%E9%9A%8F%E6%89%8B%E4%B8%80%E5%86%99/" style="font-size: 1.3em; color: #99a1ac">随手一写</a></div></div><div class="card-widget card-archives">
     <div class="item-headline">
       <i class="fas fa-archive"></i>
       <span>归档</span>
@@ -170,4 +536,4 @@
         </li>
       
     </ul>
-  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">7</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">8.6k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-04-11T07:50:19.586Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Hxd</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="true" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="true" async="async"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">7</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">12.7k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-04-12T08:07:49.092Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Hxd</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="true" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="true" async="async"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
