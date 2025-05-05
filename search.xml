@@ -129,13 +129,25 @@
     
     
     <entry>
-      <title></title>
+      <title>我的第一篇博客</title>
       <link href="/2025/04/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/"/>
       <url>/2025/04/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
       
-        <content type="html"><![CDATA[<hr><p>title: 我的第一篇博客<br>date: 2025-04-03 19:45:46<br>categories: 生活随手日常<br>tags: 随手一写<br>cover: <a href="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/5a049b55-7089-4bff-af1a-0efddc230724.jpg">https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/5a049b55-7089-4bff-af1a-0efddc230724.jpg</a></p><p>搞博客主要是每次搜集资料非常麻烦，所以我就想着自己搭建一个博客然后来记录一些知识点，同时我也会在我的博客上分享我的日常和生活。</p>]]></content>
+        <content type="html"><![CDATA[<p>搞博客主要是每次搜集资料非常麻烦，所以我就想着自己搭建一个博客然后来记录一些知识点，同时我也会在我的博客上分享我的日常和生活。</p>]]></content>
       
       
+      <categories>
+          
+          <category> 生活随手日常 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 随手一写 </tag>
+            
+        </tags>
       
     </entry>
     
