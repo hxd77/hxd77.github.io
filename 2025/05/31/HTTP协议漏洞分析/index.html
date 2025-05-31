@@ -1,0 +1,335 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HTTP协议漏洞分析 | Hxd的博客</title><meta name="author" content="Hxd"><meta name="copyright" content="Hxd"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="HTTP协议漏洞1. CVE-2021-31166跟CVE-2022-211907一样道理。 2. CVE-2022-21907前言“Accept-Encoding” HTTP 标头字段值具有以下格式： Accept-Encoding &#x3D; #( codings [ weight ] )codings&#x3D; content-coding &#x2F; &quot;identity&quot; &#x2F; &quot;*&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP协议漏洞分析">
+<meta property="og:url" content="https://hxd77.xyz/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Hxd的博客">
+<meta property="og:description" content="HTTP协议漏洞1. CVE-2021-31166跟CVE-2022-211907一样道理。 2. CVE-2022-21907前言“Accept-Encoding” HTTP 标头字段值具有以下格式： Accept-Encoding &#x3D; #( codings [ weight ] )codings&#x3D; content-coding &#x2F; &quot;identity&quot; &#x2F; &quot;*&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg">
+<meta property="article:published_time" content="2025-05-31T14:33:54.000Z">
+<meta property="article:modified_time" content="2025-05-31T14:46:35.424Z">
+<meta property="article:author" content="Hxd">
+<meta property="article:tag" content="学习">
+<meta property="article:tag" content="漏洞">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "HTTP协议漏洞分析",
+  "url": "https://hxd77.xyz/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/",
+  "image": "https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg",
+  "datePublished": "2025-05-31T14:33:54.000Z",
+  "dateModified": "2025-05-31T14:46:35.424Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Hxd",
+      "url": "https://hxd77.xyz/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://github.com/hxd77/BlogImage/blob/master/Blog/d.jpg?raw=true"><link rel="canonical" href="https://hxd77.xyz/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Hxd","link":"链接: ","source":"来源: Hxd的博客","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: '[object Object]',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HTTP协议漏洞分析',
+  isHighlightShrink: true,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/background.css"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-color: #efefef;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Hxd的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">HTTP协议漏洞分析</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">HTTP协议漏洞分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-31T14:33:54.000Z" title="发表于 2025-05-31 22:33:54">2025-05-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-31T14:46:35.424Z" title="更新于 2025-05-31 22:46:35">2025-05-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">漏洞分析</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="HTTP协议漏洞"><a href="#HTTP协议漏洞" class="headerlink" title="HTTP协议漏洞"></a>HTTP协议漏洞</h1><h2 id="1-CVE-2021-31166"><a href="#1-CVE-2021-31166" class="headerlink" title="1. CVE-2021-31166"></a><a target="_blank" rel="noopener" href="https://www.cve.org/CVERecord?id=CVE-2021-31166">1. CVE-2021-31166</a></h2><p>跟CVE-2022-211907一样道理。</p>
+<h2 id="2-CVE-2022-21907"><a href="#2-CVE-2022-21907" class="headerlink" title="2. CVE-2022-21907"></a><a target="_blank" rel="noopener" href="https://www.cve.org/CVERecord?id=CVE-2022-21907">2. CVE-2022-21907</a></h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>“Accept-Encoding” HTTP 标头字段值具有以下格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Accept-Encoding = #( codings [ weight ] )</span><br><span class="line">codings= content-coding / &quot;identity&quot; / &quot;*&quot;</span><br><span class="line">weight= &quot;;q=&quot; qvalue</span><br><span class="line">qvalue= ( &quot;0&quot; [ &quot;.&quot; 0*3DIGIT ] ) / ( &quot;1&quot; [ &quot;.&quot; 0*3(&quot;0&quot;) ] )</span><br></pre></td></tr></table></figure>
+<p>示例“Accept-Encoding”标头如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Accept-Encoding: gzip</span><br><span class="line">Accept-Encoding: identity</span><br><span class="line">Accept-Encoding: *</span><br><span class="line">Accept-Encoding: deflate, gzip;q=1.0, *;q=0.5</span><br></pre></td></tr></table></figure>
+<p>其中字段值字符串是gzip、identity、<em>*、deflate、 gzip;q=1.0, </em>;q=0.5在HTTP.sys中的例程HTTP!UlAcceptEncodingHeaderHandler、HTTP!UlpParseAcceptEncoding和HTTP！UlpParseContentCoding负责解析“Accept-Encoding”HTTP 请求标头。</p>
+<hr>
+<h3 id="漏洞描述："><a href="#漏洞描述：" class="headerlink" title="漏洞描述："></a>漏洞描述：</h3><p>HTTP 协议栈远程代码执行漏洞，Internet Information Services (IIS) 是一种灵活、可扩展、安全且可管理的 Web 服务，用于托管 Web 上的静态和动态内容。IIS 支持各种 Web 技术，包括 HTML、ASP、ASP.NET、JSP、PHP 和 CGI。此功能通过称为 http 协议栈 ( http.sys ) 的内核模式设备驱动实现。此驱动程序负责解析 http 请求并对客户端响应。<br>漏洞出现在http.sys内，未授权的攻击者可以构造恶意请求包攻击目标服务器，成功利用该漏洞的攻击者可导致目标服务器蓝屏，或执行任意代码。</p>
+<p>超文本传输协议（HTTP）是一个用于传输超媒体文档（例如HTML）的应用层协议。它是为Web浏览器与Web服务器之间的通信而设计的，Windows上的HTTP协议栈用于Windows上的Web服务器，如IIS，若该协议栈相关的组件存在漏洞，则可能导致远程恶意代码执行。经分析，CVE-2021-31166漏洞影响可稳定触发BSoD（Blue Screen of Death，缩写BSoD，指微软Windows操作系统在无法从一个系统错误中恢复过来时显示的蓝屏死机图像）。该漏洞被微软官方标记为Wormable（蠕虫级）和Exploitation More Likely（更可能被利用），这意味着漏洞利用可能性很大，恶意攻击者有可能通过利用该漏洞制造蠕虫病毒攻击。</p>
+<hr>
+<h3 id="漏洞复现："><a href="#漏洞复现：" class="headerlink" title="漏洞复现："></a>漏洞复现：</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>攻击者</th>
+<th>受害者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 11</td>
+<td>Windows 10 2004版(20H1)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>poc代码如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"> </span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Please input your host...\n&quot;</span>)</span><br><span class="line">host = <span class="built_in">input</span>()</span><br><span class="line"> </span><br><span class="line">poc = requests.get(<span class="string">f&#x27;http://<span class="subst">&#123;host&#125;</span>/&#x27;</span>, headers = &#123;<span class="string">&#x27;Accept-Encoding&#x27;</span>: <span class="string">&#x27;A, ,&#x27;</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>然后在Win10中开启IIS：</p>
+<p>打开控制面板-启用关闭Windows功能-开启Internet Information Services&amp;Internet Information Services可承载的Web核心</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250530192051715.png" alt="image-20250530192051715"></p>
+<p>这里我的Virtualbox中Win10使用的是桥接模式，要保证能和主机互相ping通：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250530200005079.png" alt="image-20250530200005079"></p>
+<p>在cmd中输入<code>ipconfig/all</code>查看Win10本机的ip地址，然后在浏览器中打开本机的ip地址就可以看到IIS服务：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250530192337727.png" alt="image-20250530192337727"></p>
+<p>在攻击者机器中输入如下，便可造成Windows 10中的BSoD蓝屏。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531213942626.png" alt="image-20250531213942626"></p>
+<hr>
+<h3 id="漏洞原因分析："><a href="#漏洞原因分析：" class="headerlink" title="漏洞原因分析："></a>漏洞原因分析：</h3><p>将dump文件在Windgb中打开进行分析：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531002054016.png" alt="image-20250531002054016"></p>
+<p>使用<code>kd&gt;k</code>进行栈回溯：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531131245924.png" alt="image-20250531131245924"></p>
+<p>发现是调用了<code>HTTP!UIFreeUnknownCodingList</code>函数之后才引发的<code>KiRaiseSecurityCheckFailure</code>报错。</p>
+<p>调用如下：</p>
+<p> ───&gt; nt!KiStartSystemThread+0x28<br> │    ├──&gt; nt!PspSystemThreadStartup+0x55<br> │    │    ├──&gt; HTTP!UlpThreadPoolWorker+0x112<br> │    │    │    ├──&gt; HTTP!UlpHandleRequest+0x1aa<br> │    │    │    │    ├──&gt; HTTP!UlpParseNextRequest+0x1ff<br> │    │    │    │    │    ├──&gt; HTTP!UlParseHttp+0xac7<br> │    │    │    │    │    │    ├──&gt; HTTP!UlParseHeader+0x218<br> │    │    │    │    │    │    │    ├──&gt; HTTP!UlAcceptEncodingHeaderHandler+0x51<br> │    │    │    │    │    │    │    │    ├──&gt; HTTP!UlpParseAcceptEncoding+0x298f5<br> │    │    │    │    │    │    │    │    │    ├──&gt; HTTP!UlFreeUnknownCodingList+0x63<br> │    │    │    │    │    │    │    │    │    │    ├──&gt; nt!KiRaiseSecurityCheckFailure+0x323<br> │    │    │    │    │    │    │    │    │    │    │    ├──&gt; nt!KiFastFailDispatch+0xd0<br> │    │    │    │    │    │    │    │    │    │    │    │    ├──&gt; nt!KiBugCheckDispatch+0x69<br> │    │    │    │    │    │    │    │    │    │    │    │    │    └──&gt; nt!KeBugCheckEx</p>
+<p>这里整理一下调用关系：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">UlParseHttp -&gt; UlParseHeader -&gt; UlAcceptEncodingHeaderHandler -&gt; UlpParseAcceptEncoding</span><br><span class="line">（解析请求）     （解析 HTTP 头）   （解析 Accept-Encoding 字段）      （解析 Accept-Encoding 内容）</span><br></pre></td></tr></table></figure>
+<p>使用<code>kd&gt;!analyze -v</code>自动分析bug信息报告：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531002550523.png" alt="image-20250531002550523"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531002654318.png" alt="image-20250531002654318"></p>
+<p>可以看到是由于<code>LIST_ENTRY</code>的双重释放而造成的蓝屏，并且可以看到造成问题的程序是HTTP.sys。然后我们可以在<code>C:\Windows\System32\drivers</code>中找到<code>http.sys</code>文件。</p>
+<p>分析DUMP，调用栈可见异常出现在UlFreeUnknownCodingList函数内，该函数由<code>UlpParseAcceptEncoding</code>调用，接下来对这两个函数进行分析。先再IDA中打开对<code>UlpParseAcceptEncoding</code>函数分析。</p>
+<h4 id="1-构建链表UlpParseAcceptEncoding"><a href="#1-构建链表UlpParseAcceptEncoding" class="headerlink" title="1. 构建链表UlpParseAcceptEncoding"></a>1. 构建链表UlpParseAcceptEncoding</h4><p>它会循环解析 Accept-Encoding 中的编码方式，首先通过 <code>UlpParseContentCoding</code> 函数依次获取每个编码信息，如果是支持的编码方式，则设置相应位；如果是 没有被识别出的其他编码方式，则调用 <code>ExAllocatePoolWithTagPriority</code> 函数申请 0x20 字节大小的堆空间来存放这些信息，然后将它们链到 <code>UnknownCodingList</code> 中，其中<code>UnknownCodingList</code> 是一个双向循环链表：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531162951023.png" alt="image-20250531162951023"></p>
+<h4 id="2-更换为Request链表头"><a href="#2-更换为Request链表头" class="headerlink" title="2. 更换为Request链表头"></a>2. 更换为Request链表头</h4><p>上述构建链表过程通过循环调用，直到获取完所有编码后，会进入一个判断分支，除非<code>UnknownCodingList</code>不为空链表且链头前后链接无异常，就会将 <code>UnknownCodingListHead</code> 取下，然后把 <code>Request</code>对象的<code>UnknownCodingListHead</code>链入：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531185349799.png" alt="image-20250531185349799"></p>
+<p>对关系进行整理如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">//*************如果满足以下任意条件，则会调用 __fastfail(3u)*************</span></span><br><span class="line"><span class="comment">//校验 UnknownCodingListHead 前后关系</span></span><br><span class="line">UnknownCodingListHead.Flink-&gt;Blink != &amp;UnknownCodingListHead</span><br><span class="line">UnknownCodingListHead.Blink-&gt;Flink != &amp;UnknownCodingListHead</span><br><span class="line"><span class="comment">//将 UnknownCodingListHead 取下</span></span><br><span class="line">UnknownCodingListHead.Blink-&gt;Flink = UnknownCodingListHead.Flink</span><br><span class="line">UnknownCodingListHead.Flink-&gt;Blink = UnknownCodingListHead.Blink</span><br><span class="line"><span class="comment">//判断 RequestUnknownCodingListHead 是否为空</span></span><br><span class="line">Request-&gt;UnknownCodingListHead.Flink-&gt;Blink != &amp;Request-&gt;UnknownCodingListHead</span><br><span class="line">Request-&gt;UnknownCodingListHead.Blink-&gt;Flink != &amp;Request-&gt;UnknownCodingListHead</span><br><span class="line"><span class="comment">//校验 UnknownCodingListHead-&gt;Flink 前后关系</span></span><br><span class="line">UnknownCodingListHead-&gt;Flink-&gt;Flink-&gt;Blink != UnknownCodingListHead-&gt;Flink</span><br><span class="line">UnknownCodingListHead-&gt;Blink-&gt;Flink-&gt;Flink != UnknownCodingListHead-&gt;Flink</span><br><span class="line"><span class="comment">//***********判断条件通过之后，将 RequestUnknownCodingListHead 链进去***********</span></span><br><span class="line">Request-&gt;UnknownCodingListHead.Blink-&gt;Flink = UnknownCodingListHead-&gt;Flink</span><br><span class="line">Request-&gt;UnknownCodingListHead.Blink = UnknownCodingListHead.Flink-&gt;Blink</span><br><span class="line">UnknownCodingListHead.Flink-&gt;Blink-&gt;Flink = &amp;Request-&gt;UnknownCodingListHead</span><br><span class="line">UnknownCodingListHead.Flink-&gt;Blink = Request-&gt;UnknownCodingListHead.Blink</span><br></pre></td></tr></table></figure>
+<p>在上一步更换链头的过程中，虽然已经将链表头由<code>UnknownCodingListHead</code>更换为<code>Request-&gt;UnknownCodingListHead</code>，但是并没有 <code>UnknownCodingListHead</code>将清空，通过<code>UnknownCodingListHead</code> 还是可以访问 <code>UnknownCodingListHead-&gt;Flink</code> 和 <code>UnknownCodingListHead-&gt;Blink</code>，即，<code>UnknownCodingListHead</code> 中依然保留可以操控原来链表的指针，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/lhl7/My_pics/Typora/cve-2022-21907.drawio.png" alt="cve-2022-21907.drawio"></p>
+<p>图中左右侧箭头都表示节点的前后指针，在更换链表头后，没有将<code>UnknownCodingListHead</code>置为空指针。</p>
+<h4 id="3-参数判定"><a href="#3-参数判定" class="headerlink" title="3. 参数判定"></a>3. 参数判定</h4><p>回到前面，在进行判断时：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531194701386.png" alt="image-20250531194701386"></p>
+<p>在此之后，程序进入判断如果<code>v5&lt;0</code>，则跳转到LABEL_33:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531194759680.png" alt="image-20250531194759680"></p>
+<p>LABEL_33处会判断<code>UnknownCodingList</code> 是否为空，如果不为空就调用 <code>UlFreeUnknownCodingList</code>函数，且参数为<code>&amp;UnknownCodingListHead</code>。由于 <code>UnknownCodingListHead</code> 已经不在循环双链表中，按照这个流程对<code>UnknownCodingList</code>进行释放就会出现双重释放的问题。</p>
+<p> 因此，要触发此漏洞，要使得v5的值小于0，通过对于v5进行溯源，如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531200420395.png" alt="image-20250531200420395"></p>
+<p> v5作为函数<code>UlpParseContentCoding</code>的返回值，若 v5 小于 0 且不等于 0xC0000225，则逻辑转移至 LABEL_46，这会进一步导致程序逻辑跳过将<code>RequestUnknownCodingListHead</code>链进链表的过程，在 <code>UlFreeUnknownCodingList</code> 函数中释放 <code>UnknownCodingList</code> 时，不会出现双重释放的问题。</p>
+<p>综上，只有当 v5 为 0xC0000225，且<code>UnknownCodingList</code>不为空时，才会进行前文中分析的链表操作，且在最后判断 <code>v5 &lt; 0</code> 后，跳到 LABEL_33 去执行<code>UlFreeUnknownCodingList</code> 函数，于是就引起了双重释放。</p>
+<p>为了让<code>UlpParseContentCoding</code>函数的返回值等于0xC0000225，才能使得程序进入漏洞触发逻辑，观察<code>UlpParseContentCoding</code>函数：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531201534518.png" alt="image-20250531201534518"></p>
+<p>函数最终的返回值是v12。v9通过参数a2进行传递，而a2是当前解析剩余长度：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531201454172.png" alt="image-20250531201454172"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531214534486.png" alt="image-20250531214534486"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250531201825354.png" alt="image-20250531201825354"></p>
+<p> 最终，当v9的值为0时，将返回值v12赋值为0xC0000225，并跳转至返回逻辑。综上，在函数<code>UlpParseContentCoding</code>中， 因此要使得v9的值为0，可将最后一个参数设定为空格，在进入<code>UlpParseContentCoding</code>后，a2的值为1，v9会被赋值为1，并且第一个编码字符A是未知编码字符，通过循环自减一次后会退出，使得v9的值为0。使得上图判断条件成立后，作为函数返回值的参数v12会被进一步赋值为0xc0000225，最终使得程序进入双重释放的漏洞分支逻辑。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://hxd77.xyz">Hxd</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://hxd77.xyz/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">https://hxd77.xyz/2025/05/31/HTTP协议漏洞分析/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://hxd77.xyz" target="_blank">Hxd的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0/">学习</a><a class="post-meta__tags" href="/tags/%E6%BC%8F%E6%B4%9E/">漏洞</a></div><div class="post-share"><div class="social-share" data-image="https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width no-desc" href="/2025/05/15/%E7%BD%91%E7%BB%9C%E4%B8%AD%E6%9C%89%E7%A7%98%E5%AF%86%E5%90%97/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2"></div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/05/07/PPP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="PPP协议漏洞分析"><img class="cover" src="https://raw.githubusercontent.com/hxd77/BlogImage/master/BlogNotCDN/2b6290a6-98b3-4147-8568-6a68b529c3dd.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-07</div><div class="info-item-2">PPP协议漏洞分析</div></div><div class="info-2"><div class="info-item-1">PPP协议的漏洞分析前言PPP 协议，全称 Point-to-Point Protocol（点对点协议），是一种工作在 数据链路层（OSI 第二层） 的通信协议，专门用于在两台节点设备之间建立直连链路，以便安全、可靠地传输多种网络层协议（如 IP、IPX、AppleTalk 等）。  🧩 一句话定义： PPP 是一种用于串行链路的标准封装协议，能提供链路建立、认证、压缩、错误检测和多协议封装能力。   🔧 PPP 的主要功能包括：    功能 说明     多协议支持 可传输 IPv4、IPv6、AppleTalk、IPX 等多种网络层协议   链路建立与配置 使用 LCP（链路控制协议）协商链路参数，如最大帧大小、压缩等   身份验证 可选使用 PAP 或 CHAP 认证机制，确认连接双方身份   网络层协议协商 使用 NCP 协议，如 IPCP（用于 IP 地址协商）   错误检测 采用帧校验（如 CRC）保障链路层数据的完整性      📦 PPP 帧结构PPP 的帧结构（基于...</div></div></div></a><a class="pagination-related" href="/2025/05/06/PPPoE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="PPPoE协议的漏洞分析"><img class="cover" src="https://raw.githubusercontent.com/hxd77/BlogImage/master/BlogNotCDN/a729f8fa-763a-4d38-a335-ef6ca590fc6a.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-06</div><div class="info-item-2">PPPoE协议的漏洞分析</div></div><div class="info-2"><div class="info-item-1">PPPoE协议漏洞分析前言PPPoE  的全称是 Point-to-Point Protocol over Ethernet（以太网上的点对点协议） ，它是一种在 以太网（比如家庭局域网）上建立拨号连接  的协议，主要用于 宽带上网连接（特别是 ADSL） 。PPPoE也叫宽带拨号上网，拨号宽带接入是当前最广泛的宽带接入方式，运营商分配宽带用户名和密码，通过用户名和密码进行用户身份认证。如果电脑与宽带直接连接，需要在电脑上进行宽带PPPoE拨号才可以上网。简而言之，PPPoE拨号是使用宽带账号、密码进行拨号的上网方式。  🔧 简单理解： PPPoE 就是你用 用户名+密码拨号上网  的方式，在以太网中实现互联网连接的技术。   🧱 结构说明：PPPoE 是把 PPP 协议（原本用于电话线拨号）  封装在 以太网帧  中，让传统拨号方式可以应用在现代以太网中。 它结合了两个协议的优点： 📞 PPP ：支持认证（如 PAP/CHAP）、压缩、加密等  🌐 Ethernet ：局域网广泛使用的网络协议    📦 工作流程： 发现阶段（Discovery）   客户端广播寻找...</div></div></div></a><a class="pagination-related" href="/2025/05/07/SMTP%E5%8D%8F%E8%AE%AE%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="SMTP协议的漏洞分析"><img class="cover" src="https://raw.githubusercontent.com/hxd77/BlogImage/master/BlogNotCDN/be7846e7-050c-4086-8705-9ed2e3024d05.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-07</div><div class="info-item-2">SMTP协议的漏洞分析</div></div><div class="info-2"><div class="info-item-1">SMTP协议的漏洞分析前言SMTP（Simple Mail Transfer Protocol，简单邮件传输协议）是互联网中用来发送电子邮件的标准通信协议。 SMTP 的作用SMTP 是电子邮件从客户端发往邮件服务器，以及邮件服务器之间转发邮件时使用的协议。例如：  当你在邮箱客户端（如 Outlook、Foxmail 或手机邮箱 App）写好邮件并点击“发送”时，SMTP 会把邮件发送到收件人的邮件服务器；  然后，接收方的邮件服务器再通过 IMAP 或 POP3 协议将邮件提供给收件人读取。    SMTP 的关键特点    特点 说明     协议类型 应用层协议   端口号（常见） 默认使用 TCP 的 25 端口；加密传输通常使用 465（SSL）或 587（STARTTLS）端口   数据格式 纯文本（包括邮件头和正文）   传输方向 主要负责“发送”而非“接收”      SMTP 发送流程示意：[发件人客户端] --SMTP--&gt; [发件人邮件服务器] --SMTP--&gt; [收件人邮件服务器] --IMAP/POP3--&gt;...</div></div></div></a><a class="pagination-related" href="/2025/05/07/SNMP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="SNMP协议漏洞分析"><img class="cover" src="https://raw.githubusercontent.com/hxd77/BlogImage/master/BlogNotCDN/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-07</div><div class="info-item-2">SNMP协议漏洞分析</div></div><div class="info-2"><div class="info-item-1">SNMP协议漏洞分析前言  SNMP（Simple Network Management Protocol，简单网络管理协议）是一种用来管理和监控网络设备的标准协议。  📡 SNMP 的作用SNMP 允许网络管理员使用一台集中管理的计算机（称为 管理端）来获取或控制网络中各种设备（如路由器、交换机、服务器、打印机等，称为 被管理端）的状态或配置。  🧱 SNMP 的基本组成| 组件                                   | 说明                                                         || ——————————————————— | —————————————————————————————— || 管理端（Manager）                  | 负责发送请求、接收数据、集中管理设备                         || 代理端（Agent）                    | 运行在每台被管理设备上，负责收集设备信息并响应管理端的请求   ||...</div></div></div></a><a class="pagination-related" href="/2025/05/09/HTML1/" title="HTML1"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-09</div><div class="info-item-2">HTML1</div></div><div class="info-2"><div class="info-item-1">HTML的概述HTML是HyperText  Markup  Language的缩写，即超文本标记语言。它为我们提供了许多功能不同的标签，最终运行时由浏览器对标签进行解析，呈现出不同标签的样子。 HTML标签（上）2. HTML基本结构标签               </div></div></div></a><a class="pagination-related" href="/2025/05/09/HTML%E5%AD%A6%E4%B9%A0%E4%BB%8E0%E5%88%B01/" title="HTML学习从0到1"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-09</div><div class="info-item-2">HTML学习从0到1</div></div><div class="info-2"><div class="info-item-1">前言OK，就是突然心血来潮想学习一下前端。今天先从HTML语言学习开始，主要是参考了黑马程序员pink老师以及这篇博客。当然，网上也有很多资料，书籍的话我看网上推荐《Head First HTML与CSS》，但是我稍微看了一下，这本书的内容很多，一共有700多页，我觉得更适合当一本工具书。写这篇我主要是记录一下我的学习过程。当然，学习分为被动学习和主动学习，我们不仅要去看视频和看书，还要写项目才能达到主动学习。那我们现在开始学习HTML。 </div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://github.com/hxd77/BlogImage/blob/master/Blog/20250406173840676.png?raw=true" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Hxd</div><div class="author-info-description">东隅已逝,桑榆非晚</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/hxd77"><i></i><span>😘关注我...</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/hxd77" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_74005941?spm=1018.2226.3001.5343" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:hxddong77@163.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">独行侠总冠军！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.</span> <span class="toc-text">HTTP协议漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-CVE-2021-31166"><span class="toc-number">1.1.</span> <span class="toc-text">1. CVE-2021-31166</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-CVE-2022-21907"><span class="toc-number">1.2.</span> <span class="toc-text">2. CVE-2022-21907</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.2.1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="toc-number">1.2.2.</span> <span class="toc-text">漏洞描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%EF%BC%9A"><span class="toc-number">1.2.3.</span> <span class="toc-text">漏洞复现：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90%EF%BC%9A"><span class="toc-number">1.2.4.</span> <span class="toc-text">漏洞原因分析：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%9E%84%E5%BB%BA%E9%93%BE%E8%A1%A8UlpParseAcceptEncoding"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">1. 构建链表UlpParseAcceptEncoding</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%9B%B4%E6%8D%A2%E4%B8%BARequest%E9%93%BE%E8%A1%A8%E5%A4%B4"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">2. 更换为Request链表头</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%8F%82%E6%95%B0%E5%88%A4%E5%AE%9A"><span class="toc-number">1.2.4.3.</span> <span class="toc-text">3. 参数判定</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="HTTP协议漏洞分析"><img src="https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HTTP协议漏洞分析"/></a><div class="content"><a class="title" href="/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" title="HTTP协议漏洞分析">HTTP协议漏洞分析</a><time datetime="2025-05-31T14:33:54.000Z" title="发表于 2025-05-31 22:33:54">2025-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/15/%E7%BD%91%E7%BB%9C%E4%B8%AD%E6%9C%89%E7%A7%98%E5%AF%86%E5%90%97/" title="无标题">无标题</a><time datetime="2025-05-15T12:22:55.687Z" title="发表于 2025-05-15 20:22:55">2025-05-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/14/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E6%94%BB%E5%87%BB/" title="缓冲区溢出攻击">缓冲区溢出攻击</a><time datetime="2025-05-14T05:53:14.000Z" title="发表于 2025-05-14 13:53:14">2025-05-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/10/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%AC%AC1%E7%AB%A0/" title="汇编语言第1章">汇编语言第1章</a><time datetime="2025-05-10T08:34:45.000Z" title="发表于 2025-05-10 16:34:45">2025-05-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/10/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言">汇编语言</a><time datetime="2025-05-10T08:28:40.000Z" title="发表于 2025-05-10 16:28:40">2025-05-10</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://i.pinimg.com/736x/bf/01/a0/bf01a0e521aaf9e6c6e71ed31127c790.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2025 By Hxd</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script src="xxxx"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="true" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="true" async="async"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true 
+        ? (usePjax ? pjax.loadUrl('/404.html') : window.location.href = '/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
