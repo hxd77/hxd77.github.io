@@ -4,6 +4,54 @@
   
     
     <entry>
+      <title>Nebula1</title>
+      <link href="/2025/06/02/Nebula1/"/>
+      <url>/2025/06/02/Nebula1/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Level-01——环境变量的利用"><a href="#Level-01——环境变量的利用" class="headerlink" title="Level 01——环境变量的利用"></a>Level 01——环境变量的利用</h2><h3 id="详情："><a href="#详情：" class="headerlink" title="详情："></a>详情：</h3><p>以下程序中存在一个允许任意程序执行的漏洞，你能找到它吗？要执行此级别，请使用 level01 帐户和密码登录。此级别的文件位于 /home/flag01。</p><p>flag01的源码官方已经提供，这道题目是让我们分析该代码，找出代码中存在的一处可执行任意文件漏洞。题目提供的代码如下：</p><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv, <span class="type">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">gid_t</span> gid;</span><br><span class="line">  <span class="type">uid_t</span> uid;</span><br><span class="line">  gid = <span class="built_in">getegid</span>();</span><br><span class="line">  uid = <span class="built_in">geteuid</span>();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">setresgid</span>(gid, gid, gid);</span><br><span class="line">  <span class="built_in">setresuid</span>(uid, uid, uid);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">system</span>(<span class="string">&quot;/usr/bin/env echo and now what?&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><p>在Kali中ssh连接level01@nebula:</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250602131944280.png" alt="image-20250602131944280"></p><p>分析可执行任意文件漏洞的重点是先找到程序中执行命令的地方。通过分析上面的源码中可以看到程序调用了system函数，system函数可以执行指定的Shell命令，在这里system执行的<code>/usr/bin/env</code>命令，注意system的参数是一个字符串而非变量，所以我们不能直接控制system函数的行为。那重点就放在了env命令上，通过man env得到的帮助如下：</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">env</span> - run a program <span class="keyword">in</span> a modified environment</span><br></pre></td></tr></table></figure><blockquote><p><code>/usr/bin/env</code> 是一个用来<strong>在当前环境中查找并执行命令</strong>的工具。</p></blockquote><p>简单来说，env的参数是要执行的Shell命令，env会遍历PATH环境变量中的路径来寻找要执行的命令。env命令常出现在脚本文件的第一行，比如</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env python</span></span><br></pre></td></tr></table></figure><blockquote><p><code>#!</code> 是什么？</p><ul><li>被称为 <strong>shebang</strong>（或 hashbang），是 Unix/Linux 系统对脚本文件的一种约定。</li><li>它告诉系统：<strong>用哪个程序来解释运行这个脚本</strong>。</li></ul><p><code>/usr/bin/env</code> 是什么？</p><ul><li><code>env</code> 是一个程序，可以<strong>在当前环境变量中查找并执行命令</strong>。</li><li>它通过 <code>PATH</code> 环境变量自动查找你系统中 <code>python3</code> 的位置。</li></ul><p><code>python</code> 是什么？</p><ul><li>指定使用 <code>python</code> 作为脚本解释器。</li><li>也就是说，这个脚本会被当作 Python 代码来执行。</li></ul></blockquote><p>这样写的好处是为了防止把位置写死，如果写成<code>#!/usr/bin/python</code>的话，在其他一些系统中，~python~命令未必在<code>/usr/bin</code>目录中。用了env，不管python在哪个目录中，只要目录列在PATH环境变量中，就可以被找到。</p><p>所以，真正的问题是出现在PATH变量上，虽然调用的参数无法被控制，但它执行命令受限于外部PATH变量，而PATH变量是可控的。env是依次遍历PATH变量中的目录，只要我们让env优先找到伪装的echo命令，就起到了劫持作用。</p><p>并且可以看到flag01为rwsr，说明被设置了SUID，所以会议flag01用户运行程序，</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250602173833992.png" alt="image-20250602173833992"></p><p>我们可以让/tmp/echo链接到/bin/getflag上，然后修改PATH环境变量，把/tmp放在最前面，这样env会首先在/tmp下找到echo并执行（并且是以flag01身份运行）。</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250602174703978.png" alt="image-20250602174703978"></p><blockquote><div class="table-container"><table><thead><tr><th>命令部分</th><th>含义</th></tr></thead><tbody><tr><td><code>ln</code></td><td>创建链接（link）</td></tr><tr><td><code>-s</code></td><td>创建<strong>符号链接</strong>（symbolic link），也叫软链接</td></tr><tr><td><code>/bin/getflag</code></td><td>目标文件，链接所指向的文件（原文件）</td></tr><tr><td><code>/tmp/echo</code></td><td>链接文件的路径，即你要创建的“快捷方式”</td></tr></tbody></table></div><p>执行 <code>/tmp/echo</code>，系统会自动跳转去执行 <code>/bin/getflag</code>。</p><p><code>PATH=/tmp:$PATH</code>将当前 PATH 变量设置为：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt;bash</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt;复制编辑</span><br><span class="line">&gt;/tmp:&lt;原来的PATH值&gt;</span><br></pre></td></tr></table></figure></blockquote>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 学习 </tag>
+            
+            <tag> 靶场 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Nebula0</title>
+      <link href="/2025/06/02/Nebula0/"/>
+      <url>/2025/06/02/Nebula0/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Level-00——寻找特权程序"><a href="#Level-00——寻找特权程序" class="headerlink" title="Level 00——寻找特权程序"></a>Level 00——寻找特权程序</h2><h3 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h3><p>这一关需要你找到一个以“flag00”账户运行的“设置用户 ID”程序。你也可以通过仔细检查/目录下的顶层目录中是否存在可疑目录来找到它。</p><h3 id="Solution："><a href="#Solution：" class="headerlink" title="Solution："></a>Solution：</h3><p>根据题目描述，本关需要在系统中搜索一个设置了SUID的程序，这个程序将是以flag00身份运行的。</p><blockquote><p>SUID（Set User ID）是 Linux 和 Unix 系统中一种特殊的文件权限机制，常用于<strong>可执行文件</strong>。它允许普通用户在运行该程序时<strong>临时获得该程序文件所有者的权限</strong>，通常是 root 权限。</p></blockquote><p>要完成本关，需要掌握<code>find</code>命令的用法。find命令的格式如下：</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">find [path...] [expression]</span><br></pre></td></tr></table></figure><p>expression可以跟选项。根据题目要求，我们要查找一个所属于flag00账号的可执行程序。find有一个选项叫-uid，后面跟用户的uid值。每个Linux账号都对应一个uid，且不重复。账户的UID可以用命令<code>id</code>查看：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250601181616755.png" alt="image-20250601181616755"></p><p>得到flag00用户的UID为999，接着从根目录”/“开始搜素这个神秘的程序：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250601182021026.png" alt="image-20250601182021026"></p><div class="table-container"><table><thead><tr><th>部分</th><th>含义</th></tr></thead><tbody><tr><td><code>find /</code></td><td>从根目录 <code>/</code> 开始递归查找</td></tr><tr><td><code>-uid 999</code></td><td>查找<strong>属主用户 ID 是 999</strong> 的文件</td></tr><tr><td><code>2&gt;/dev/null</code></td><td>把<strong>标准错误输出（stderr）重定向</strong>到 <code>/dev/null</code>，即隐藏错误信息，比如“权限不够”、“没有访问权限”等</td></tr></tbody></table></div><p>由于当前用户是level00，在进一些没有权限进入的目录进行搜索时，是会出错的，所以用<code>2&gt;/dev/null</code>将错误输出到/<code>dev/null</code>这个空白设备里。Linux标准输入、标准输出、标准错误输出分别对应0、1和2。</p><p>搜索结果中，/home/bin/…/flag00/比较特殊，应该是我们要的程序：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250601190649651.png" alt="image-20250601190649651"></p><p>按照提示，我们已经拥有了flag00的权限，执行getflag：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/TyporaImage/image-20250601190741287.png" alt="image-20250601190741287"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Exploit-Excercise-Nebula </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 学习 </tag>
+            
+            <tag> 靶场 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>HTTP协议漏洞分析</title>
       <link href="/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
       <url>/2025/05/31/HTTP%E5%8D%8F%E8%AE%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/</url>
