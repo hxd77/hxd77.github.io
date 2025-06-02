@@ -4,45 +4,7 @@
   
     
     <entry>
-      <title>test1</title>
-      <link href="/2025/06/02/test1/"/>
-      <url>/2025/06/02/test1/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>test1</title>
-      <link href="/2025/06/02/A/1/"/>
-      <url>/2025/06/02/A/1/</url>
-      
-        <content type="html"><![CDATA[<p>This is test</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> test </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 学习 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Nebula1</title>
+      <title>Exploit-Excercise-Nebula-1</title>
       <link href="/2025/06/02/Exploit-Excercise-Nebula-1/"/>
       <url>/2025/06/02/Exploit-Excercise-Nebula-1/</url>
       
@@ -69,7 +31,7 @@
     
     
     <entry>
-      <title>Nebula0</title>
+      <title>Exploit-Excercise-Nebula-0</title>
       <link href="/2025/06/02/Exploit-Excercise-Nebula-0/"/>
       <url>/2025/06/02/Exploit-Excercise-Nebula-0/</url>
       
