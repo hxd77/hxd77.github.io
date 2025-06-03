@@ -4,6 +4,73 @@
   
     
     <entry>
+      <title>Exploit-Excercise-Nebula-7</title>
+      <link href="/2025/06/03/Exploit-Excercise-Nebula-7/"/>
+      <url>/2025/06/03/Exploit-Excercise-Nebula-7/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Exploit-Excercise-Nebula-6</title>
+      <link href="/2025/06/03/Exploit-Excercise-Nebula-6/"/>
+      <url>/2025/06/03/Exploit-Excercise-Nebula-6/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Level-06-——-破解Linux登录密码"><a href="#Level-06-——-破解Linux登录密码" class="headerlink" title="Level 06 —— 破解Linux登录密码"></a>Level 06 —— 破解Linux登录密码</h2><h2 id="详情："><a href="#详情：" class="headerlink" title="详情："></a>详情：</h2><p>flag06账户凭据来自旧版Unix系统。要执行此级别，请以level06账户和密码level06登录。此级别的文件位于/home/flag06。</p><h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution:"></a>Solution:</h2><p>根据题目所述，flag06这个账号的认证凭据是按照传统UNIX的方法储存的——意味着密文是存储在/etc/passwd里的，而不是/etc/shadow中的——因为把密码存到passwd里不安全，所以以后的Linux发行版都将加密后的密码单独存放到/etc/shadow中的。</p><p>所以可以直接读取/etc/passwd里flag加密后的密码：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603215207597.png" alt="image-20250603215207597"></p><p>这里flag06后面跟着是密码的哈希值。</p><p>在/tmp中新建一个passwd文件内容如下：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag06:ueqwOCnSGdsuM:993:993::/home/flag06:/bin/sh</span><br></pre></td></tr></table></figure><p>接着从<a href="http://www.openwall.com/john/">http://www.openwall.com/john/</a> 下载john的源码包并编译（不会的请见<a href="https://github.com/openwall/john/blob/bleeding-jumbo/doc/INSTALL">doc/INSTALL</a>）：</p><p>但是这里我是直接在Kali Linux上用john破解的（Kali Linux上自带john）：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603220640070.png" alt="image-20250603220640070"></p><p>发现flag06账户的密码是hello，直接登录flag06用户：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603220747745.png" alt="image-20250603220747745"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Exlploit-Excercise-Nebula </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 学习 </tag>
+            
+            <tag> 靶场 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Exploit-Excercise-Nebula-5</title>
+      <link href="/2025/06/03/Exploit-Excercise-Nebula-5/"/>
+      <url>/2025/06/03/Exploit-Excercise-Nebula-5/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Level-05-——-窃取机密文件"><a href="#Level-05-——-窃取机密文件" class="headerlink" title="Level 05 —— 窃取机密文件"></a>Level 05 —— 窃取机密文件</h2><h2 id="详情："><a href="#详情：" class="headerlink" title="详情："></a>详情：</h2><p>检查flag05目录。您正在寻找弱目录权限。要执行此级别，请以level05账户和密码level05登录。此级别的文件位于/home/flag05。</p><h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution:"></a>Solution:</h2><p>根据题目所述，在/home/flag05里，藏着一个重要的文件。我们的任务就是窃取这个文件。转到目录/home/flag05下，用ls -al命令查看列出所有文件：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603211444787.png" alt="image-20250603211444787"></p><p>根据文件名来判断重要的文件，这里有两个比较重要，第一个是.backup，第二个是.ssh，前者我们可以理解成一个备份文件，应该是重要文件的备份；后者，或许保存了私钥，如果得手，或许就可以ssh了，但是level05这个账号对.ssh的权限不够。不过.backup倒是有足够的权限进入（可以看出后面其他用户的权限是r-x，说明可以进行读和执行）：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603212124362.png" alt="image-20250603212124362"></p><p>.backup里有个压缩文件，需要我们解压，不可解压到当前目录，因为没有写入权限。得把它解压到/tmp（记得/tmp权限很低）中，看看有什么东西：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603212351890.png" alt="image-20250603212351890"></p><p>是备份的key，如此以来，我们就可以用私钥以flag05用户登录。把.ssh复制保存到level05的home目录中（ssh验证时用的私钥公钥就放在home目录中的.ssh目录里），然后ssh登录：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603212805006.png" alt="image-20250603212805006"></p><p>登录成功后执行getflag：</p><p><img src="https://cdn.jsdelivr.net/gh/hxd77/BlogImage/Blog/image-20250603212837036.png" alt="image-20250603212837036"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Exploit-Excercise-Nebula </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 学习 </tag>
+            
+            <tag> 靶场 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Exploit-Excercise-Nebula-4</title>
       <link href="/2025/06/02/Exploit-Excercise-Nebula-4/"/>
       <url>/2025/06/02/Exploit-Excercise-Nebula-4/</url>
