@@ -1,4 +1,4 @@
-/* ���ں� Start */
+/* 公众号 Start */
 
 [data-theme='light'] #aside-content .card-widget#card-wechat {
     background: #000000 !important;
@@ -15,8 +15,8 @@
     height: 110px;
 }
 
-/* �����������aside �� mobile Ϊ false���ǵ÷ſ��������ע�ͣ�
-   �����������aside �� mobile Ϊ true ������Ҫ�Ķ��� */
+/* 如果你设置了aside 的 mobile 为 false，记得放开下面这段注释；
+   如果你设置了aside 的 mobile 为 true ，不需要改动。 */
 
 /* @media screen and (max-width: 768px) {
     #aside-content .card-widget#card-wechat {
@@ -71,10 +71,10 @@
     background-size: 100%;
 }
 
-/* ���ں� End */
+/* 公众号 End */
 
 
-/* �Զ���ײ�  start */
+/* 自定义底部  start */
 #ft {
     max-width: 1200px;
     margin: 0 auto 12px;
@@ -228,4 +228,4 @@
         flex-basis: 100% !important;
     }
 }
-/* �Զ���ײ�  End */
+/* 自定义底部  End */
