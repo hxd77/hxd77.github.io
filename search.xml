@@ -4,6 +4,19 @@
   
     
     <entry>
+      <title></title>
+      <link href="/2025/09/07/Cuda1/"/>
+      <url>/2025/09/07/Cuda1/</url>
+      
+        <content type="html"><![CDATA[<h1 id="CUDA第1章：GPU和CUDA简介"><a href="#CUDA第1章：GPU和CUDA简介" class="headerlink" title="CUDA第1章：GPU和CUDA简介"></a>CUDA第1章：GPU和CUDA简介</h1><h2 id="1-1-GPU简介"><a href="#1-1-GPU简介" class="headerlink" title="1.1 GPU简介"></a>1.1 GPU简介</h2><p>GPU的意思是<code>图形处理单元</code>，通常与CPU（中央处理器）相提并论。典型的CPU有几个相对较快的内核，而典型的GPU有数百或数千个相对较慢的内核。在CPU中，更多的晶体管专门用于缓存和控制；在GPU中，更多的晶体管专门用于数据处理。</p><p> GPU计算是<code>异构计算</code>。它涉及CPU和GPU，通常分别称为<code>主机</code>和<code>设备</code>。CPU和非嵌入式GPU都有自己的DRAM（动态随机存取存储器），它们通常通过PCle（外围组件互连快速）总线连接。</p><p>我们只考虑Nvidia的GPU，因为</p>]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>HTML_Day2</title>
       <link href="/2025/08/08/HTML-Day2/"/>
       <url>/2025/08/08/HTML-Day2/</url>
