@@ -2,33 +2,27 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Motto. Etc.
+subtitle: Aspiring Systems & Cryptography Engineer |
 
 profile:
   align: right
   image: prof_pic.jpg
-  image_circular: false # crops the image to make it circular
-  more_info: >
-    <p>555 your office number</p>
-    <p>123 your address street</p>
-    <p>Your City, State 12345</p>
+  image_circular: true # 你的照片很适合圆形剪裁
+  address: >
+    <p>Rust 🦀 | C++ ⚙️ | Python 🐍</p>
+    <p>Cryptography 🔐 | ZKP 🧠</p>
 
-selected_papers: true # includes a list of papers marked as "selected={true}"
-social: true # includes social icons at the bottom of the page
-
-announcements:
-  enabled: true # includes a list of news items
-  scrollable: true # adds a vertical scroll bar if there are more than 3 news items
-  limit: 5 # leave blank to include all the news in the `_news` folder
-
-latest_posts:
-  enabled: true
-  scrollable: true # adds a vertical scroll bar if there are more than 3 new posts items
-  limit: 3 # leave blank to include all the blog posts
+news: true  # includes a list of news items
+selected_papers: true # includes a list of selected papers
+social: true  # includes social icons at the bottom
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+你好！我是 **hxd77**，一名充满热情的**系统与密码学研究生**，目前居住在**青岛**。
 
-Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
+我的兴趣专注于低层系统和高级密码学的交叉领域。目前，我正致力于深入研究 **零知识证明 (ZKP)**、软件与系统安全以及网络安全。我也非常喜欢探索 **CTF (Capture The Flag)** 和 Web 安全的世界。
 
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](https://fontawesome.com/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+我的主要技术栈包括 **Rust** 🦀、**C++** ⚙️ 和 **Python** 🐍。我热衷于解决具有挑战性的问题，并构建安全、高效的软件。
+
+闲暇时间，我经常在最喜欢的社区 [r/rust](https://www.reddit.com/r/rust/) 上浏览最新的技术动态，或者像照片里那样去户外探索。
+
+有趣的事实：拿头撞墙一个小时可以消耗 150 卡路里。
