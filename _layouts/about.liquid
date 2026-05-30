@@ -2,55 +2,171 @@
 layout: default
 ---
 <div class="post">
-  <header class="post-header">
-    <h1 class="post-title">
-      {% if site.title == 'blank' %}
-        <span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }}
-        {{ site.last_name }}
-      {% else %}
-        {{ site.title }}
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      {% if page.profile %}
+        <div class="hero-avatar">
+          {% if page.profile.image %}
+            {% assign profile_image_path = page.profile.image | prepend: 'assets/img/' %}
+            <div class="avatar-wrapper">
+              {%
+                include figure.liquid
+                loading="eager"
+                path=profile_image_path
+                class="img-fluid rounded-circle"
+                alt="profile photo"
+              %}
+            </div>
+          {% endif %}
+        </div>
       {% endif %}
-    </h1>
-    <p class="desc">{{ page.subtitle }}</p>
-  </header>
+
+      <div class="hero-text">
+        <div class="hero-greeting">Hi, I'm</div>
+        <h1 class="hero-name">
+          {% if site.title == 'blank' %}
+            <span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }}
+            {{ site.last_name }}
+          {% else %}
+            {{ site.title }}
+          {% endif %}
+        </h1>
+        <p class="hero-title">{{ page.subtitle }}</p>
+
+        <!-- Research Tags -->
+        {% if page.research_tags %}
+          <div class="research-tags">
+            {% for tag in page.research_tags %}
+              <span class="tag">
+                {% if tag.icon %}<i class="{{ tag.icon }}"></i>{% endif %}
+                {{ tag.name }}
+              </span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <p class="hero-bio">
+          I work on <strong>Zero-Knowledge Proofs</strong>, <strong>AI Security</strong>, and <strong>GPU-accelerated cryptographic systems</strong>.
+          Currently exploring the intersection of cryptography and low-level systems engineering.
+        </p>
+
+        <!-- Hero Buttons -->
+        <div class="hero-buttons">
+          {% if site.data.socials.cv_pdf %}
+            <a href="{{ site.data.socials.cv_pdf | relative_url }}" class="btn-hero btn-primary" target="_blank">
+              <i class="ai ai-cv"></i> CV
+            </a>
+          {% endif %}
+          {% if site.data.socials.scholar_userid %}
+            <a href="https://scholar.google.com/citations?user={{ site.data.socials.scholar_userid }}" class="btn-hero btn-scholar" target="_blank">
+              <i class="ai ai-google-scholar"></i> Scholar
+            </a>
+          {% endif %}
+          {% if site.data.socials.github_username %}
+            <a href="https://github.com/{{ site.data.socials.github_username }}" class="btn-hero btn-github" target="_blank">
+              <i class="fa-brands fa-github"></i> GitHub
+            </a>
+          {% endif %}
+          {% if site.data.socials.email %}
+            <a href="mailto:{{ site.data.socials.email | encode_email }}" class="btn-hero btn-outline">
+              <i class="fa-solid fa-envelope"></i> Email
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
 
   <article>
-    {% if page.profile %}
-      <div class="profile float-{% if page.profile.align == 'left' %}left{% else %}right{% endif %}">
-        {% if page.profile.image %}
-          {% assign profile_image_path = page.profile.image | prepend: 'assets/img/' %}
-          {% if page.profile.image_circular %}
-            {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
-          {% else %}
-            {% assign profile_image_class = 'img-fluid z-depth-1
-      rounded' %}
-          {% endif %}
-          {% capture sizes %}(min-width: {{ site.max_width }}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px)
-      30vw, 95vw"{% endcapture %}
-          {%
-            include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=page.profile.image
-            cache_bust=true
-          %}
-        {% endif %}
-        {% if page.profile.more_info %}
-          <div class="more-info">{{ page.profile.more_info }}</div>
-        {% endif %}
-      </div>
-    {% endif %}
-
     <div class="clearfix">{{ content }}</div>
+
+    <!-- Research Highlights -->
+    {% if page.research_highlights %}
+      <section class="research-highlights">
+        <h2 class="section-heading">
+          <a href="{{ '/projects/' | relative_url }}">Research Interests</a>
+        </h2>
+        <div class="highlights-grid">
+          {% for item in page.research_highlights %}
+            <div class="highlight-card">
+              <div class="card-icon">{{ item.icon }}</div>
+              <h3 class="card-title">{{ item.title }}</h3>
+              <p class="card-description">{{ item.description }}</p>
+              {% if item.link %}
+                <a href="{{ item.link }}" class="card-link">
+                  Learn more <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
 
     <!-- News -->
     {% if page.announcements and page.announcements.enabled %}
-      <h2>
-        <a href="{{ '/news/' | relative_url }}" style="color: inherit">news</a>
+      <h2 class="section-heading">
+        <a href="{{ '/news/' | relative_url }}" style="color: inherit">News</a>
       </h2>
       {% include news.liquid limit=true %}
     {% endif %}
 
+    <!-- Featured Projects -->
+    {% if page.featured_projects %}
+      <section class="featured-projects">
+        <h2 class="section-heading">
+          <a href="{{ '/projects/' | relative_url }}">Featured Projects</a>
+        </h2>
+        <div class="projects-grid">
+          {% for project in page.featured_projects %}
+            <div class="project-card">
+              <div class="project-header">
+                <h3 class="project-title">
+                  <a href="{{ project.url }}">{{ project.title }}</a>
+                </h3>
+                {% if project.tech %}
+                  <div class="project-meta">
+                    <span>{{ project.tech }}</span>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="project-body">
+                <p class="project-description">{{ project.description }}</p>
+                {% if project.tags %}
+                  <div class="project-tags">
+                    {% for tag in project.tags %}
+                      <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="project-footer">
+                {% if project.github %}
+                  <a href="{{ project.github }}" target="_blank">
+                    <i class="fa-brands fa-github"></i> Code
+                  </a>
+                {% endif %}
+                {% if project.paper %}
+                  <a href="{{ project.paper }}" target="_blank">
+                    <i class="fa-solid fa-file-pdf"></i> Paper
+                  </a>
+                {% endif %}
+                {% if project.demo %}
+                  <a href="{{ project.demo }}" target="_blank">
+                    <i class="fa-solid fa-play"></i> Demo
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
     <!-- Latest posts -->
     {% if page.latest_posts and page.latest_posts.enabled %}
-      <h2>
+      <h2 class="section-heading">
         <a href="{{ '/blog/' | relative_url }}" style="color: inherit">latest posts</a>
       </h2>
       {% include latest_posts.liquid %}
@@ -58,7 +174,7 @@ layout: default
 
     <!-- Selected papers -->
     {% if page.selected_papers %}
-      <h2>
+      <h2 class="section-heading">
         <a href="{{ '/publications/' | relative_url }}" style="color: inherit">selected publications</a>
       </h2>
       {% include selected_papers.liquid %}

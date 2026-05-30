@@ -2,27 +2,76 @@
 layout: about
 title: about
 permalink: /
-subtitle: Aspiring Systems & Cryptography Engineer |
+subtitle: Aspiring Systems & Cryptography Engineer
 
 profile:
   align: right
   image: prof_pic.jpg
-  image_circular: true # 你的照片很适合圆形剪裁
-  address: >
-    <p>Rust 🦀 | C++ ⚙️ | Python 🐍</p>
-    <p>Cryptography 🔐 | ZKP 🧠</p>
+  image_circular: true
 
-news: true  # includes a list of news items
-selected_papers: true # includes a list of selected papers
-social: true  # includes social icons at the bottom
+research_tags:
+  - name: Zero-Knowledge Proofs
+    icon: fa-solid fa-lock
+  - name: AI Security
+    icon: fa-solid fa-shield-halved
+  - name: CUDA
+    icon: fa-solid fa-bolt
+  - name: Cryptography
+    icon: fa-solid fa-key
+  - name: CTF
+    icon: fa-solid fa-flag
+  - name: Low-Level Systems
+    icon: fa-solid fa-microchip
+
+research_highlights:
+  - title: Zero-Knowledge Proofs
+    icon: 🔐
+    description: Exploring efficient ZKP systems, including SNARKs, STARKs, and their applications in privacy-preserving computation.
+    link: /projects/
+  - title: AI Security
+    icon: 🛡️
+    description: Exploring adversarial attacks, prompt injection, model robustness, and secure AI system design.
+    link: /projects/
+  - title: GPU-Accelerated Crypto
+    icon: ⚡
+    description: Leveraging CUDA for high-performance zero-knowledge proofs and cryptographic computations on GPUs.
+    link: /projects/
+  - title: CTF & Web Security
+    icon: 🏁
+    description: Active participant in Capture The Flag competitions, specializing in cryptography and web security challenges.
+    link: /projects/
+
+featured_projects:
+  - title: ZKP Library
+    description: A high-performance zero-knowledge proof library with CUDA-accelerated proving, supporting Groth16 and PLONK.
+    tech: CUDA, Cryptography
+    tags: [ZKP, CUDA, SNARKs]
+    url: /projects/
+    github: https://github.com/hxd77
+  - title: Security Toolkit
+    description: A comprehensive security analysis toolkit for binary exploitation and reverse engineering.
+    tech: C++, Python
+    tags: [Security, RE, Exploitation]
+    url: /projects/
+    github: https://github.com/hxd77
+  - title: Cryptographic Primitives
+    description: Implementation of modern cryptographic primitives including elliptic curves, hash functions, and commitment schemes.
+    tech: CUDA, C++, Math
+    tags: [Crypto, ECC, Hash]
+    url: /projects/
+    github: https://github.com/hxd77
+
+news: true
+selected_papers: true
+social: true
 ---
 
-你好！我是 **hxd77**，一名充满热情的**系统与密码学研究生**，目前居住在**青岛**。
+Hi, I'm **hxd77** — a graduate student from Qingdao 🌊, working at the crossroads of **Zero-Knowledge Proofs**, **AI Security**, and **systems engineering**.
 
-我的兴趣专注于低层系统和高级密码学的交叉领域。目前，我正致力于深入研究 **零知识证明 (ZKP)**、软件与系统安全以及网络安全。我也非常喜欢探索 **CTF (Capture The Flag)** 和 Web 安全的世界。
+I'm fascinated by the idea that you can *prove* something is true without revealing *why* — that's what draws me to ZKP. On the AI side, I think about adversarial robustness, prompt injection, and how to make LLMs actually trustworthy. I also play **CTF** competitions (crypto & web), because there's no better way to understand security than breaking things apart.
 
-我的主要技术栈包括 **Rust** 🦀、**C++** ⚙️ 和 **Python** 🐍。我热衷于解决具有挑战性的问题，并构建安全、高效的软件。
+I build with **CUDA** ⚡ and **C++** ⚙️ to push cryptographic computations to the limits of modern GPUs. I also use **Python** 🐍 for prototyping and research.
 
-闲暇时间，我经常在最喜欢的社区 [r/rust](https://www.reddit.com/r/rust/) 上浏览最新的技术动态，或者像照片里那样去户外探索。
+I'm a firm believer that the best ideas come from **cross-pollination** — reading widely, staying curious, and never stopping at the surface of things. Outside the terminal, you'll find me exploring the outdoors 🏔️, reading the latest papers on GPU-accelerated cryptography, or diving into a good book over coffee ☕.
 
-有趣的事实：拿头撞墙一个小时可以消耗 150 卡路里。
+> *The quieter you become, the more you can hear.* — and the same applies to reading code.

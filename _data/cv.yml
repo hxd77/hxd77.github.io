@@ -2,96 +2,60 @@
   type: map
   contents:
     - name: Full Name
-      value: Albert Einstein
-    - name: Date of Birth
-      value: 14th March 1879
+      value: Xiangdong Huang
+    - name: Location
+      value: Qingdao, China
     - name: Languages
-      value: English, German
+      value: Chinese, English
 
 - title: Education
   type: time_table
   contents:
-    - title: PhD
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1905
+    - title: M.S. in Computer Science
+      institution: Your University
+      year: 20XX - Present
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Federal teaching diploma
-      institution: Eidgenössische Technische Hochschule, Zurich, Switzerland
-      year: 1900
+        - Research focus: Zero-Knowledge Proofs, AI Security
+    - title: B.S. in Computer Science
+      institution: Your University
+      year: 20XX - 20XX
       description:
-        - Description 1.
-        - Description 2.
+        - GPA: X.XX / 4.0
 
-- title: Experience
-  type: time_table
-  contents:
-    - title: Professor of Theoretical Physics
-      institution: Institute for Advanced Study, Princeton University
-      year: 1933 - 1955
-      description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Visiting Professor
-      institution: California Institute of Technology, Pasadena, California, US
-      year: 1933
-      description:
-        - Description 1.
-        - Description 2.
-
-    - title: Director
-      institution: Kaiser Wilhelm Institute for Physics, Berlin, Germany.
-      year: 1917-1933
-
-    - title: Professor of Theoretical Physics
-      institution: Karl-Ferdinand University, Prague, Czechoslovakia
-      year: 1911 - 1917
-      description:
-
-    - title: Associate Professor of Theoretical Physics
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1909 - 1911
-
-- title: Open Source Projects
-  type: time_table
-  contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
-
-- title: Honors and Awards
-  type: time_table
-  contents:
-    - year: 1921
-      items:
-        - Nobel Prize in Physics
-        - Matteucci Medal
-    - year: 2029
-      items:
-        - Max Planck Medal
-
-- title: Academic Interests
+- title: Research Interests
   type: nested_list
   contents:
-    - title: Topic 1.
+    - title: Cryptography
       items:
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
+        - Zero-Knowledge Proofs (ZKP)
+        - SNARKs & STARKs
+        - Commitment Schemes
+    - title: AI Security
       items:
-        - Description 1.
-        - Description 2.
+        - Adversarial Attacks & Robustness
+        - Prompt Injection & LLM Safety
+        - Secure AI System Design
+    - title: Programming Languages & Tools
+      items:
+        - CUDA, C/C++, Python
+        - Low-level Systems Programming
+
+- title: Skills
+  type: list
+  contents:
+    - <u>Programming:</u> CUDA, C/C++, Python, Bash
+    - <u>Security:</u> CTF, Binary Exploitation, Web Security
+    - <u>Cryptography:</u> ZKP, Elliptic Curves, Hash Functions
+    - <u>Tools:</u> GDB, IDA Pro, Wireshark, Git
+
+- title: CTF Achievements
+  type: time_table
+  contents:
+    - year: 20XX
+      items:
+        - Add your CTF achievements here
 
 - title: Other Interests
   type: list
   contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+    - <u>Hobbies:</u> Open-source contribution, GPGPU computing, Outdoor activities

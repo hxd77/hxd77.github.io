@@ -9,7 +9,7 @@ last_name: Huang #姓
 contact_note: > #联系方式下的备注
   Email me for crypto and ZKP discussions 
 description: > # 网站简介,会被搜索引擎抓取
-   Focusing on Zero-Knowledge Proofs, Rust, and System Security.
+   Focusing on Zero-Knowledge Proofs, CUDA, and AI Security.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
@@ -264,8 +264,8 @@ display_categories: ["external-services"] # these categories will be displayed o
 # -----------------------------------------------------------------------------
 
 scholar:
-  last_name: [Einstein]
-  first_name: [Albert, A.]
+  last_name: [Huang]
+  first_name: [Xiangdong, X.]
 
   style: apa
   locale: en
