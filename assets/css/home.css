@@ -216,6 +216,7 @@ h3 {
 }
 .hero-art {
   position: relative;
+  overflow: clip;
   min-width: 0;
   height: 540px;
   display: grid;
