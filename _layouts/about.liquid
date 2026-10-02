@@ -16,8 +16,8 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b0e14'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='40' font-family='monospace' fill='%23c3f66d'%3Eh%3C/text%3E%3C/svg%3E"
     >
-    <link rel="stylesheet" href="{{ '/assets/css/home.css' | relative_url }}">
-    <script src="{{ '/assets/js/home.js' | relative_url }}" defer></script>
+    <link rel="stylesheet" href="{{ '/assets/css/home.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+    <script src="{{ '/assets/js/home.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">跳转到正文</a>
