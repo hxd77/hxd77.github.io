@@ -6,7 +6,7 @@ subtitle: Aspiring Systems & Cryptography Engineer
 
 profile:
   align: right
-  image: prof_pic.jpg
+  image: profile-2026-10-03.png
   image_circular: true
 
 research_tags:
