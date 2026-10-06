@@ -31,7 +31,7 @@
       display: inline-block;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         top: -4px;
         left: -4px;
@@ -121,18 +121,14 @@
     font-size: 0.8rem;
     font-weight: 500;
     border-radius: 2rem;
-    background: linear-gradient(135deg,
-      rgba(181, 9, 172, 0.1),
-      rgba(102, 126, 234, 0.1));
+    background: linear-gradient(135deg, rgba(181, 9, 172, 0.1), rgba(102, 126, 234, 0.1));
     color: var(--global-theme-color);
     border: 1px solid rgba(181, 9, 172, 0.2);
     transition: all 0.3s ease;
     cursor: default;
 
     &:hover {
-      background: linear-gradient(135deg,
-        rgba(181, 9, 172, 0.2),
-        rgba(102, 126, 234, 0.2));
+      background: linear-gradient(135deg, rgba(181, 9, 172, 0.2), rgba(102, 126, 234, 0.2));
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(181, 9, 172, 0.15);
     }
@@ -273,7 +269,7 @@
     overflow: hidden;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -298,9 +294,7 @@
       width: 48px;
       height: 48px;
       border-radius: 0.5rem;
-      background: linear-gradient(135deg,
-        rgba(181, 9, 172, 0.1),
-        rgba(102, 126, 234, 0.1));
+      background: linear-gradient(135deg, rgba(181, 9, 172, 0.1), rgba(102, 126, 234, 0.1));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -642,16 +636,12 @@
 
 html[data-theme="dark"] {
   .research-tags .tag {
-    background: linear-gradient(135deg,
-      rgba(38, 152, 186, 0.15),
-      rgba(102, 126, 234, 0.15));
+    background: linear-gradient(135deg, rgba(38, 152, 186, 0.15), rgba(102, 126, 234, 0.15));
     color: $cyan-color;
     border-color: rgba(38, 152, 186, 0.3);
 
     &:hover {
-      background: linear-gradient(135deg,
-        rgba(38, 152, 186, 0.25),
-        rgba(102, 126, 234, 0.25));
+      background: linear-gradient(135deg, rgba(38, 152, 186, 0.25), rgba(102, 126, 234, 0.25));
     }
   }
 
